@@ -5,8 +5,7 @@ using UnityEngine;
 public class SpawnManager : MonoBehaviour
 {
     [SerializeField] private GameObject enemyPrefab;
-    private Coroutine spawnEnemy = null;
-    private WaitForSeconds _timeWaiting = new WaitForSeconds(2.0f);
+    private WaitForSeconds _timeWaiting = new WaitForSeconds(5f);
 
     [SerializeField] private GameObject _enemyContainer;
 
@@ -15,22 +14,18 @@ public class SpawnManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        StartCoroutine("SpawnRoutine");
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (spawnEnemy == null) 
-        {
-            spawnEnemy = StartCoroutine("SpawnRoutine");
-        }
+
     }
 
     IEnumerator SpawnRoutine()
     {
-        Vector3 loc;                   
-        // deleted code:: int count = 10;                 
+        Vector3 loc;                                    
 
         while (_stopSpawning == false)              
         {
@@ -42,11 +37,7 @@ public class SpawnManager : MonoBehaviour
             newEnemy.transform.parent = _enemyContainer.transform;
 
             yield return _timeWaiting;
-
-            //deleted Code:: count--; 
         }
-
-        spawnEnemy = null;
     }
 
   public void OnPlayerDeath()

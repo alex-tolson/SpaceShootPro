@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -16,11 +18,14 @@ public class Player : MonoBehaviour
 
     private SpawnManager _spawnManager;
 
+    [SerializeField] private bool _isTripleShotActive;
+    [SerializeField] private GameObject _tripleShotPrefab;
+
 
     void Start()
     {
-        _fireRate = 0.15f;
-        _offset = new Vector3(transform.position.x, 0.8f, transform.position.z);
+        _offset = new Vector3(transform.position.x, 1.05f, transform.position.z);
+
         transform.position = new Vector3(0, 0, 0);
 
         _spawnManager = GameObject.Find("SpawnManager").GetComponent<SpawnManager>();
@@ -42,7 +47,15 @@ public class Player : MonoBehaviour
     void FireLaser()
     {
         _canFire = Time.time + _fireRate;
-        Instantiate(_laserPrefab, _offset + transform.position, Quaternion.identity);
+        
+        if (_isTripleShotActive)
+        {
+            Instantiate(_tripleShotPrefab, transform.position, Quaternion.identity);
+        }
+        else
+        {
+            Instantiate(_laserPrefab, transform.position + _offset, Quaternion.identity);
+        }
     }
 
     void CalculateMovement()
@@ -53,7 +66,7 @@ public class Player : MonoBehaviour
         transform.Translate(Vector3.right * _horizontalInput * _speed * Time.deltaTime);
         transform.Translate(Vector3.up * _verticalInput * _speed * Time.deltaTime);
 
-        transform.position = new Vector3(transform.position.x, Mathf.Clamp(transform.position.y, -3.8f, 0));
+        transform.position = new Vector3(transform.position.x, Mathf.Clamp(transform.position.y, -4f, 0));
 
         if (transform.position.x > 11.3f)
         {
@@ -71,9 +84,6 @@ public class Player : MonoBehaviour
 
         if (_lives < 1)
         {
-            //communicate with spawn manager
-            //call the OnPlayerDeath method
-
             if (_spawnManager == null)
             {
                 Debug.LogError("Player::_spawnManager is null");
@@ -84,6 +94,17 @@ public class Player : MonoBehaviour
         }
     }
 
+    public void TripleShotActive()
+    {
+        _isTripleShotActive = true;
+        StartCoroutine("TripleShotPowerDownRoutine");
 
+    }
+
+    IEnumerator TripleShotPowerDownRoutine()
+    {
+        yield return new WaitForSeconds(5f);
+        _isTripleShotActive = false;
+    }
 }
 
