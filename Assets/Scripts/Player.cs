@@ -25,14 +25,9 @@ public class Player : MonoBehaviour
     void Start()
     {
         _offset = new Vector3(transform.position.x, 1.05f, transform.position.z);
-
         transform.position = new Vector3(0, 0, 0);
-
-        _spawnManager = GameObject.Find("SpawnManager").GetComponent<SpawnManager>();
-        
+        _spawnManager = GameObject.Find("SpawnManager").GetComponent<SpawnManager>();    
     }
-
-
 
     void Update()
     {
