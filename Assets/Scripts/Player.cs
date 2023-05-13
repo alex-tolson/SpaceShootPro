@@ -8,6 +8,7 @@ public class Player : MonoBehaviour
     [SerializeField]
     private float _speed = 3.5f;
 
+    [SerializeField] private float _speedBoostSpeed = 8.5f;
     private float _horizontalInput;
     private float _verticalInput;
     [SerializeField] private GameObject _laserPrefab;
@@ -20,6 +21,7 @@ public class Player : MonoBehaviour
 
     [SerializeField] private bool _isTripleShotActive;
     [SerializeField] private GameObject _tripleShotPrefab;
+    [SerializeField] private bool _isSpeedBoostActive;
 
 
     void Start()
@@ -58,8 +60,16 @@ public class Player : MonoBehaviour
         _horizontalInput = Input.GetAxis("Horizontal");
         _verticalInput = Input.GetAxis("Vertical");
 
-        transform.Translate(Vector3.right * _horizontalInput * _speed * Time.deltaTime);
-        transform.Translate(Vector3.up * _verticalInput * _speed * Time.deltaTime);
+        Vector3 dir = (new Vector3(_horizontalInput, _verticalInput, 0));
+
+        if (_isSpeedBoostActive)
+        {
+            transform.Translate(dir * _speedBoostSpeed * Time.deltaTime);
+        }
+        else
+        {
+            transform.Translate(dir * _speed * Time.deltaTime);
+        }
 
         transform.position = new Vector3(transform.position.x, Mathf.Clamp(transform.position.y, -4f, 0));
 
@@ -100,6 +110,18 @@ public class Player : MonoBehaviour
     {
         yield return new WaitForSeconds(5f);
         _isTripleShotActive = false;
+    }
+
+    public void SpeedBoostActive() 
+    {
+        _isSpeedBoostActive = true;
+        StartCoroutine("SpeedBoostPowerDownRoutine");
+    }
+
+    IEnumerator SpeedBoostPowerDownRoutine() 
+    {
+        yield return new WaitForSeconds(5f);
+        _isSpeedBoostActive = false;
     }
 }
 

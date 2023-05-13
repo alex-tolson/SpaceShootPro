@@ -8,12 +8,7 @@ public class Powerup : MonoBehaviour
 {
     [SerializeField] private float _speed = 3;
     private Player player;
-    [SerializeField] private int powerupID;
-    //ID for Powerups
-    //0 = Triple Shot
-    //1 = Speed
-    //2 = Shields
-
+    [SerializeField] private int powerupID; // 0 = Triple Shot -- 1 = Speed -- 2 = Shields
 
     void Start()
     {
@@ -39,12 +34,30 @@ public class Powerup : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            //if powerupID = 0
-            player.TripleShotActive();
-            //else if powerupID is 1
-            // Debug.Log("Speed Powerup collected");
-            //else if powerupID is 2
-            // Debug.Log("Shield Powerup collected");
+            switch (powerupID)
+            {
+                case 0:
+                    {
+                        player.TripleShotActive();
+                        break;
+                    }
+                case 1:
+                    {
+                        player.SpeedBoostActive();
+                        break;
+                    }
+                case 2:
+                    {
+                        Debug.Log("Shield Powerup collected");
+                        break;
+                    }
+                default:
+                    {
+                        Debug.Log("Default");
+                        break;
+                    }
+            }
+
             Destroy(this.gameObject);
         }
     }

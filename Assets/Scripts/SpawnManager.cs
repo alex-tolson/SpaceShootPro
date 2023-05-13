@@ -6,10 +6,13 @@ public class SpawnManager : MonoBehaviour
 {
     [SerializeField] private GameObject enemyPrefab;
     private WaitForSeconds _timeWaiting = new WaitForSeconds(5f);
-    [SerializeField] private GameObject _tripleShotPowerup;
+    
+
     [SerializeField] private GameObject _enemyContainer;
 
     private bool _stopSpawning = false;
+
+    [SerializeField] private GameObject[] powerups;
 
 
     void Start()
@@ -38,13 +41,15 @@ public class SpawnManager : MonoBehaviour
     IEnumerator SpawnPowerupRoutine()
     {
         Vector3 location;
-
         while (_stopSpawning == false)
         {
+            int randomPowerup = (Random.Range(0, 2));
             int randomSecs = Random.Range(3, 8);
             float randomX = Random.Range(-10f, 10f);
             location = new Vector3(randomX, 8.0f, 0f);
-            Instantiate(_tripleShotPowerup, location, Quaternion.identity);
+
+            Instantiate(powerups[randomPowerup], location, Quaternion.identity);
+
             yield return new WaitForSeconds(randomSecs);
         }
     }
