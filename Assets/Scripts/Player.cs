@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro.EditorUtilities;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -7,11 +8,13 @@ public class Player : MonoBehaviour
 
     [SerializeField]
     private float _speed = 3.5f;
-
+    private UIManager _uiManager;
     [SerializeField] private float _speedBoostSpeed = 8.5f;
     private float _horizontalInput;
     private float _verticalInput;
     [SerializeField] private GameObject _laserPrefab;
+    [SerializeField] private GameObject _shieldVisual;
+
     [SerializeField] private Vector3 _offset;
     [SerializeField] private int _lives = 3;
     [SerializeField] private float _fireRate = .15f;
@@ -19,16 +22,25 @@ public class Player : MonoBehaviour
 
     private SpawnManager _spawnManager;
 
-    [SerializeField] private bool _isTripleShotActive;
+    private bool _isTripleShotActive;
     [SerializeField] private GameObject _tripleShotPrefab;
-    [SerializeField] private bool _isSpeedBoostActive;
+    private bool _isSpeedBoostActive;
+    private bool _isShieldsActive;
 
+    [SerializeField] private int _score;
 
     void Start()
     {
         _offset = new Vector3(transform.position.x, 1.05f, transform.position.z);
         transform.position = new Vector3(0, 0, 0);
-        _spawnManager = GameObject.Find("SpawnManager").GetComponent<SpawnManager>();    
+        
+        _spawnManager = GameObject.Find("SpawnManager").GetComponent<SpawnManager>();
+        
+        _uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();
+        if (_uiManager == null)
+        {
+            Debug.LogError("Player::_uiManager is null");
+        }
     }
 
     void Update()
@@ -85,6 +97,13 @@ public class Player : MonoBehaviour
 
     public void Damage()
     {
+        if (_isShieldsActive == true)
+        {
+            _isShieldsActive= false;
+            _shieldVisual.gameObject.SetActive(false);
+            return;
+        }
+
         _lives -= 1;
 
         if (_lives < 1)
@@ -122,6 +141,19 @@ public class Player : MonoBehaviour
     {
         yield return new WaitForSeconds(5f);
         _isSpeedBoostActive = false;
+    }
+
+    public void ShieldsActive()
+    {
+        _isShieldsActive = true;
+        _shieldVisual.gameObject.SetActive(true);
+    }
+
+    public void ScoreUpdate(int points)
+    {
+        _score += points;
+        _uiManager.UIScoreUpdate(_score);
+
     }
 }
 
