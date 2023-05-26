@@ -83,7 +83,7 @@ public class Player : MonoBehaviour
             transform.Translate(dir * _speed * Time.deltaTime);
         }
 
-        transform.position = new Vector3(transform.position.x, Mathf.Clamp(transform.position.y, -4f, 0));
+        transform.position = new Vector3(transform.position.x, Mathf.Clamp(transform.position.y, -3.6f, 0));
 
         if (transform.position.x > 11.3f)
         {
@@ -106,6 +106,8 @@ public class Player : MonoBehaviour
 
         _lives -= 1;
 
+        _uiManager.UpdateLives(_lives);
+
         if (_lives < 1)
         {
             if (_spawnManager == null)
@@ -114,7 +116,9 @@ public class Player : MonoBehaviour
             }
 
             _spawnManager.OnPlayerDeath();
+
             Destroy(this.gameObject);
+
         }
     }
 

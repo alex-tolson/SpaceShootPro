@@ -13,6 +13,7 @@ public class SpawnManager : MonoBehaviour
     private bool _stopSpawning = false;
 
     [SerializeField] private GameObject[] powerups;
+    [SerializeField] private UIManager _uiManager;
 
 
     void Start()
@@ -54,8 +55,10 @@ public class SpawnManager : MonoBehaviour
         }
     }
 
-  public void OnPlayerDeath()
+    public void OnPlayerDeath()
     {
         _stopSpawning = true;
+        _uiManager.GameOverActions();
+        
     }
 }
