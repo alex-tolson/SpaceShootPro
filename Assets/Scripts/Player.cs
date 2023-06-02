@@ -14,7 +14,8 @@ public class Player : MonoBehaviour
     private float _verticalInput;
     [SerializeField] private GameObject _laserPrefab;
     [SerializeField] private GameObject _shieldVisual;
-
+    [SerializeField] private GameObject _leftEngine;
+    [SerializeField] private GameObject _rightEngine;
     [SerializeField] private Vector3 _offset;
     [SerializeField] private int _lives = 3;
     [SerializeField] private float _fireRate = .15f;
@@ -31,7 +32,7 @@ public class Player : MonoBehaviour
 
     void Start()
     {
-        _offset = new Vector3(transform.position.x, 1.05f, transform.position.z);
+        _offset = new Vector3(0f, 1.05f, 0f);
         transform.position = new Vector3(0, 0, 0);
         
         _spawnManager = GameObject.Find("SpawnManager").GetComponent<SpawnManager>();
@@ -105,6 +106,31 @@ public class Player : MonoBehaviour
         }
 
         _lives -= 1;
+
+        if (_lives == 2)
+        {
+            int randEngine = Random.Range(0, 2);
+            if (randEngine == 0)
+            {
+                _leftEngine.gameObject.SetActive(true);
+            }
+            else if (randEngine == 1)
+            {
+                _rightEngine.gameObject.SetActive(true);
+            }
+        }
+
+        else if (_lives == 1)
+        {
+            if (_leftEngine.gameObject.activeInHierarchy == true)
+            {
+                _rightEngine.gameObject.SetActive(true);   
+            }
+            else
+            {
+                _leftEngine.gameObject.SetActive(true);
+            }
+        }
 
         _uiManager.UpdateLives(_lives);
 

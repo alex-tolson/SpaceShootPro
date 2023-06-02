@@ -54,9 +54,9 @@ public class Enemy : MonoBehaviour
             if (_player != null)
             {
                 _player.Damage();                
-                _animator.SetTrigger("OnEnemyDeath");
-                _speed = 0;
             }
+            _animator.SetTrigger("OnEnemyDeath");
+            _speed = 0;
             Destroy(gameObject, 2.0f);
         }
         if (other.CompareTag("Laser"))
