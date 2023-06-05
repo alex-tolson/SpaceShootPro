@@ -7,15 +7,7 @@ public class Enemy : MonoBehaviour
     [SerializeField] private float _speed = 4f;
     private Animator _animator;
     private Player _player;
-
-    //create handle to animator
-    //assign component to animator
-    //Set Trigger the OnTriggerEnter2D method when?
-    //if enemy collides with player
-    //if enemy collides with laser
-    //Destroy object after animation plays
-
-
+    private AudioManager _audioManager;
 
     private void Start()
     {
@@ -24,10 +16,17 @@ public class Enemy : MonoBehaviour
         {
             Debug.LogError("Enemy::Player null");
         }
+        //
         _animator = GetComponent<Animator>();
         if (_animator == null)
         {
             Debug.LogError("Enemy::Animator null");
+        }
+        //
+        _audioManager = GameObject.Find("AudioManager").GetComponent<AudioManager>();
+        if (_audioManager == null)
+        {
+            Debug.LogError("Asteroid::AudioSource is null");
         }
     }
 
@@ -55,14 +54,13 @@ public class Enemy : MonoBehaviour
             {
                 _player.Damage();                
             }
-            _animator.SetTrigger("OnEnemyDeath");
             _speed = 0;
-            Destroy(gameObject, 2.0f);
+            _animator.SetTrigger("OnEnemyDeath");
+            _audioManager.PlayExplosionFx();
+            Destroy(gameObject, 2.5f);
         }
         if (other.CompareTag("Laser"))
         {
-
-
             if (_player != null)
             {
                 _player.ScoreUpdate(10);
@@ -70,7 +68,9 @@ public class Enemy : MonoBehaviour
             Destroy(other.gameObject);
             _speed = 0;
             _animator.SetTrigger("OnEnemyDeath");
-            Destroy(gameObject, 2.0f);
+            _audioManager.PlayExplosionFx();
+
+            Destroy(gameObject, 2.5f);
         }
     }
 }

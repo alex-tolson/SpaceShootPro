@@ -7,10 +7,10 @@ public class Asteroid : MonoBehaviour
     [SerializeField] private float _speed = 3f;
     [SerializeField] private GameObject _asteroid;
     [SerializeField] private Vector3 _rot;
-
     [SerializeField] private GameObject _explosionPrefab;
 
     private SpawnManager _spawnManager;
+    private AudioManager _audioManager;
 
     void Start()
     {
@@ -20,6 +20,12 @@ public class Asteroid : MonoBehaviour
             Debug.LogError("Asteroid::SpawnManager is null");
         }
         _rot = new Vector3(0f, 0f, 90f);
+
+        _audioManager = GameObject.Find("AudioManager").GetComponent<AudioManager>();
+        if (_audioManager == null)
+        {
+            Debug.LogError("Asteroid::AudioSource is null");
+        }
     }
 
 
@@ -33,15 +39,11 @@ public class Asteroid : MonoBehaviour
         if (other.CompareTag("Laser"))
         {
             GameObject go = Instantiate(_explosionPrefab, transform.position, Quaternion.identity);
+            _audioManager.PlayExplosionFx();
             Destroy(go, 3f);
             _spawnManager.StartSpawning();
             Destroy(_asteroid, .3f);
-
         }
     }
-
-    //check for laser collision (of type trigger)
-    //Instantiate explosion at the position of the asteroid (our position)
-    //destroy explosion after 3f
 
 }

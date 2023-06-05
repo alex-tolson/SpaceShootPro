@@ -9,6 +9,7 @@ public class Powerup : MonoBehaviour
     [SerializeField] private float _speed = 3;
     private Player player;
     [SerializeField] private int powerupID; // 0 = Triple Shot -- 1 = Speed -- 2 = Shields
+    private AudioManager _audioManager;
 
     void Start()
     {
@@ -18,6 +19,13 @@ public class Powerup : MonoBehaviour
         {
             Debug.LogError("Powerup::Player is null");
         }
+
+        _audioManager = GameObject.Find("AudioManager").GetComponent<AudioManager>();
+        if(_audioManager == null)
+        {
+            Debug.LogError("Powerup::AudioManager is null");
+        }
+
     }
 
     void Update()
@@ -58,6 +66,7 @@ public class Powerup : MonoBehaviour
                     }
             }
 
+            _audioManager.PlayPowerupFx();
             Destroy(this.gameObject);
         }
     }
