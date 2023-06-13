@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.18028378, g: 0.22571412, b: 0.30692285, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -410,6 +410,7 @@ MonoBehaviour:
   _leftEngine: {fileID: 863155662}
   _rightEngine: {fileID: 76857130}
   _offset: {x: 0, y: 0, z: 0}
+  _offsetTripleShot: {x: 0, y: 1.5, z: 0}
   _lives: 3
   _fireRate: 0.15
   _tripleShotPrefab: {fileID: 2122170778678322266, guid: 48e20402f32cd53409622dd5e85ce927, type: 3}
@@ -481,7 +482,7 @@ Transform:
   - {fileID: 863155663}
   - {fileID: 76857131}
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!61 &98830410
 BoxCollider2D:
@@ -496,7 +497,7 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0, y: -0.31754798}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -507,7 +508,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 2.819118, y: 3.8269053}
+  m_Size: {x: 2.819118, y: 3.1918092}
   m_EdgeRadius: 0
 --- !u!82 &98830411
 AudioSource:
@@ -2016,7 +2017,7 @@ Transform:
   m_Children:
   - {fileID: 278798099}
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1637345857
 GameObject:
@@ -2215,10 +2216,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Asteroid
       objectReference: {fileID: 0}
-    - target: {fileID: 8785227851881634889, guid: 4391563d7ee9b1e4dada3d87f58af42d, type: 3}
-      propertyPath: _explosionPrefab
-      value: 
-      objectReference: {fileID: 113165077134919788, guid: 532a75d770dbeef4da84ce2274607f56, type: 3}
     - target: {fileID: 8785227851881634893, guid: 4391563d7ee9b1e4dada3d87f58af42d, type: 3}
       propertyPath: m_RootOrder
       value: 8

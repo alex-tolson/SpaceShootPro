@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour
@@ -8,6 +7,10 @@ public class Enemy : MonoBehaviour
     private Animator _animator;
     private Player _player;
     private AudioManager _audioManager;
+    [SerializeField] private Vector3 _offset;
+    [SerializeField] private int _fireRate;
+    [SerializeField] private float _canFire = -1f;
+    [SerializeField] private GameObject _laserPrefab;
 
     private void Start()
     {
@@ -28,6 +31,9 @@ public class Enemy : MonoBehaviour
         {
             Debug.LogError("Asteroid::AudioSource is null");
         }
+        _offset = new Vector3(0.0f, -1.75f, 0.0f);
+
+        StartCoroutine(FireLaserRoutine());
     }
 
     void Update()
@@ -69,8 +75,25 @@ public class Enemy : MonoBehaviour
             _speed = 0;
             _animator.SetTrigger("OnEnemyDeath");
             _audioManager.PlayExplosionFx();
-
+            Destroy(GetComponent<Collider2D>());
             Destroy(gameObject, 2.5f);
+        }
+    }
+
+    IEnumerator FireLaserRoutine()
+    {
+        while (true)
+        {
+            _fireRate = Random.Range(3, 6);
+            yield return new WaitForSeconds(_fireRate);
+
+            if (_canFire < Time.deltaTime + _fireRate)
+            {
+                _canFire += _fireRate;
+                GameObject laserGo = Instantiate(_laserPrefab, transform.position + _offset, Quaternion.identity);
+                laserGo.transform.parent = this.transform;
+            }
+           
         }
     }
 }

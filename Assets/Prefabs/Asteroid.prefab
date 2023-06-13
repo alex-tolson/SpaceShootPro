@@ -137,4 +137,4 @@ MonoBehaviour:
   _speed: 3
   _asteroid: {fileID: 8785227851881634888}
   _rot: {x: 0, y: 0, z: 0}
-  _explosion: {fileID: 113165077134919788, guid: 532a75d770dbeef4da84ce2274607f56, type: 3}
+  _explosionPrefab: {fileID: 113165077134919788, guid: 532a75d770dbeef4da84ce2274607f56, type: 3}

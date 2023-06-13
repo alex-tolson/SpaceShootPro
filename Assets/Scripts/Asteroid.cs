@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Asteroid : MonoBehaviour
@@ -42,6 +40,7 @@ public class Asteroid : MonoBehaviour
             _audioManager.PlayExplosionFx();
             Destroy(go, 3f);
             _spawnManager.StartSpawning();
+            Destroy(GetComponent<Collider2D>());
             Destroy(_asteroid, .3f);
         }
     }

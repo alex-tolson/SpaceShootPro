@@ -1,6 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
-using TMPro.EditorUtilities;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -17,6 +15,7 @@ public class Player : MonoBehaviour
     [SerializeField] private GameObject _leftEngine;
     [SerializeField] private GameObject _rightEngine;
     [SerializeField] private Vector3 _offset;
+    [SerializeField] private Vector3 _offsetTripleShot;
     [SerializeField] private int _lives = 3;
     [SerializeField] private float _fireRate = .15f;
     private float _canFire = -1f;
@@ -28,12 +27,14 @@ public class Player : MonoBehaviour
     private bool _isSpeedBoostActive;
     private bool _isShieldsActive;
 
+
     [SerializeField] private int _score;
     private AudioManager _audioManager;
 
     void Start()
     {
         _offset = new Vector3(0f, 1.05f, 0f);
+        _offsetTripleShot = new Vector3(0f, 1.5f, 0f);
         transform.position = new Vector3(0, 0, 0);
         
         _spawnManager = GameObject.Find("SpawnManager").GetComponent<SpawnManager>();
@@ -67,7 +68,7 @@ public class Player : MonoBehaviour
         
         if (_isTripleShotActive)
         {
-            Instantiate(_tripleShotPrefab, transform.position, Quaternion.identity);
+            Instantiate(_tripleShotPrefab, transform.position + _offsetTripleShot, Quaternion.identity);
         }
         else
         {
