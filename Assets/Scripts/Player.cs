@@ -5,9 +5,10 @@ public class Player : MonoBehaviour
 {
 
     [SerializeField]
-    private float _speed = 3.5f;
+    private float _speed = 5f;
     private UIManager _uiManager;
-    [SerializeField] private float _speedBoostSpeed = 8.5f;
+    [SerializeField] private float _speedBoostSpeed = 12.0f;
+    [SerializeField] private float _currentSpeed;
     private float _horizontalInput;
     private float _verticalInput;
     [SerializeField] private GameObject _laserPrefab;
@@ -33,6 +34,7 @@ public class Player : MonoBehaviour
 
     void Start()
     {
+        _currentSpeed = _speed;
         _offset = new Vector3(0f, 1.05f, 0f);
         _offsetTripleShot = new Vector3(0f, 1.5f, 0f);
         transform.position = new Vector3(0, 0, 0);
@@ -59,6 +61,17 @@ public class Player : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space) && Time.time > _canFire)
         {
             FireLaser();
+        }
+
+        if (Input.GetKeyDown(KeyCode.LeftShift))
+        {
+            Debug.Log("Go 1.5 Faster");
+            _currentSpeed = _speed * 1.5f;
+        }
+        else if (Input.GetKeyUp(KeyCode.LeftShift))
+        {
+            Debug.Log("Regular Speed");
+            _currentSpeed = _speed;
         }
     }
 
@@ -91,7 +104,7 @@ public class Player : MonoBehaviour
         }
         else
         {
-            transform.Translate(dir * _speed * Time.deltaTime);
+            transform.Translate(dir * _currentSpeed * Time.deltaTime);
         }
 
         transform.position = new Vector3(transform.position.x, Mathf.Clamp(transform.position.y, -3.6f, 0));
@@ -195,5 +208,6 @@ public class Player : MonoBehaviour
         _uiManager.UIScoreUpdate(_score);
 
     }
+
 }
 
