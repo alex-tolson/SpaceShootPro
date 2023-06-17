@@ -20,17 +20,20 @@ public class Player : MonoBehaviour
     [SerializeField] private int _lives = 3;
     [SerializeField] private float _fireRate = .15f;
     private float _canFire = -1f;
-    
+    //-----
     private SpawnManager _spawnManager;
-
+    //-----Activating Powerups
     private bool _isTripleShotActive;
     [SerializeField] private GameObject _tripleShotPrefab;
     private bool _isSpeedBoostActive;
     private bool _isShieldsActive;
-
-
+    //-----
     [SerializeField] private int _score;
     private AudioManager _audioManager;
+    //----Shield Powerup Variables
+    [SerializeField] private int _shieldCount = 0;
+    private Color _color = Color.white;
+    [SerializeField] private SpriteRenderer _shieldColor;
 
     void Start()
     {
@@ -51,7 +54,7 @@ public class Player : MonoBehaviour
         if (_audioManager == null)
         {
             Debug.LogError("Player::AudioManager is null");
-        }
+        }        
     }
 
     void Update()
@@ -65,12 +68,10 @@ public class Player : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.LeftShift))
         {
-            Debug.Log("Go 1.5 Faster");
             _currentSpeed = _speed * 1.5f;
         }
         else if (Input.GetKeyUp(KeyCode.LeftShift))
         {
-            Debug.Log("Regular Speed");
             _currentSpeed = _speed;
         }
     }
@@ -123,8 +124,52 @@ public class Player : MonoBehaviour
     {
         if (_isShieldsActive == true)
         {
-            _isShieldsActive= false;
-            _shieldVisual.gameObject.SetActive(false);
+            _shieldCount -= 1;
+            //Debug.Log("Shield count is: " + _shieldCount);
+
+            switch (_shieldCount)
+            {
+                case 1:
+                    {
+                        _color.a = .5f;
+                        _color.b = .5f;
+                        _shieldColor.material.color = _color;
+                        break;
+                    }
+                case 2:
+                    {
+                        _color.a = .75f;
+                        _color.b = .75f;
+                        _shieldColor.material.color = _color;
+                        break;
+                    }
+                case 3:
+                    {
+                        _color.a = 1.0f;
+                        _color.b = 1.0f;
+                        _shieldColor.material.color = _color;
+                        break;
+                    }
+                default:
+                    {
+                        if (_shieldCount > 3)
+                        {
+                            _shieldCount = 3;
+                        }
+                        else if (_shieldCount < 3)
+                        {
+                            _shieldCount = 0;
+                        }
+
+                        break;
+                    }
+            }
+
+            if (_shieldCount == 0)
+            {
+                _isShieldsActive = false;
+                _shieldVisual.gameObject.SetActive(false);
+            }
             return;
         }
 
@@ -199,7 +244,48 @@ public class Player : MonoBehaviour
     public void ShieldsActive()
     {
         _isShieldsActive = true;
+        _shieldCount += 1;
+        Debug.Log("Shield count is: " + _shieldCount);
+
         _shieldVisual.gameObject.SetActive(true);
+
+        switch (_shieldCount)
+        {
+            case 1:
+                {
+                    _color.a = .5f;
+                    _color.b = .5f;
+                    _shieldColor.material.color = _color;
+                    break;
+                }
+            case 2:
+                {
+                    _color.a = .75f;
+                    _color.b = .75f;
+                    _shieldColor.material.color = _color;
+                    break;
+                }
+            case 3:
+                {
+                    _color.a = 1.0f;
+                    _color.b = 1.0f;
+                    _shieldColor.material.color =_color;
+                    break;
+                }
+            default:
+                {
+                    if (_shieldCount > 3)
+                    {
+                        _shieldCount = 3;
+                    }  
+                    else if (_shieldCount < 3)
+                    {
+                        _shieldCount = 0;
+                    }
+                    
+                    break;
+                }
+        }
     }
 
     public void ScoreUpdate(int points)
