@@ -9,6 +9,8 @@ public class Asteroid : MonoBehaviour
 
     private SpawnManager _spawnManager;
     private AudioManager _audioManager;
+    private Player _player;
+
 
     void Start()
     {
@@ -24,6 +26,11 @@ public class Asteroid : MonoBehaviour
         {
             Debug.LogError("Asteroid::AudioSource is null");
         }
+        _player = GameObject.Find("Player").GetComponent<Player>();
+        if(_player == null)
+        {
+            Debug.LogError("Asteroid::Player is null");
+        }
     }
 
 
@@ -38,11 +45,14 @@ public class Asteroid : MonoBehaviour
         {
             GameObject go = Instantiate(_explosionPrefab, transform.position, Quaternion.identity);
             _audioManager.PlayExplosionFx();
+            _player.ResetAmmoCount();
             Destroy(go, 3f);
             _spawnManager.StartSpawning();
             Destroy(GetComponent<Collider2D>());
             Destroy(_asteroid, .3f);
         }
     }
+
+
 
 }

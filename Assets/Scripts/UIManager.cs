@@ -6,22 +6,19 @@ using UnityEngine.UI;
 public class UIManager : MonoBehaviour
 {
 
-    [SerializeField] 
-    private TMP_Text _scoreText;
+    [SerializeField] private TMP_Text _scoreText;
 
-    [SerializeField]
-    private Image _livesImg;
+    [SerializeField] private Image _livesImg;
 
-    [SerializeField]
-    private Sprite[] _livesSprites;
+    [SerializeField]private Sprite[] _livesSprites;
 
-    [SerializeField]
-    private TMP_Text _gameOverText;
+    [SerializeField] private TMP_Text _gameOverText;
 
-    [SerializeField]
-    private TMP_Text _restartText;
+    [SerializeField]private TMP_Text _restartText;
 
     private GameManager _gameManager;
+
+    [SerializeField] private TMP_Text _ammoCountText;
 
     // Start is called before the first frame update
     void Start()
@@ -63,6 +60,11 @@ public class UIManager : MonoBehaviour
 
             yield return new WaitForSeconds(.75f);
         }       
+    }
+
+    public void AmmoCountUpdate(int ammoCount)
+    {
+        _ammoCountText.text = "Ammo Count: " + ammoCount;
     }
 
     public void GameOverActions()

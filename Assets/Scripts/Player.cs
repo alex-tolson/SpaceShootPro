@@ -32,8 +32,11 @@ public class Player : MonoBehaviour
     private AudioManager _audioManager;
     //----Shield Powerup Variables
     [SerializeField] private int _shieldCount = 0;
-    private Color _color = Color.white;
+private Color _color = Color.white;
     [SerializeField] private SpriteRenderer _shieldColor;
+    //-----Ammo Count UI
+    [SerializeField] private int _ammoCount;
+
 
     void Start()
     {
@@ -63,7 +66,15 @@ public class Player : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Space) && Time.time > _canFire)
         {
-            FireLaser();
+            if (_ammoCount <= 0)
+            {
+                _ammoCount = 0;
+                _audioManager.PlayEmptyChamberFx();
+            }
+            else
+            {
+                FireLaser();
+            }
         }
 
         if (Input.GetKeyDown(KeyCode.LeftShift))
@@ -88,7 +99,9 @@ public class Player : MonoBehaviour
         {
             Instantiate(_laserPrefab, transform.position + _offset, Quaternion.identity);
         }
-
+        _ammoCount--;
+        _uiManager.AmmoCountUpdate(_ammoCount);
+        //Debug.Log("Ammo Count is " + _ammoCount);
         _audioManager.PlayLaserFx();
     }
 
@@ -125,28 +138,23 @@ public class Player : MonoBehaviour
         if (_isShieldsActive == true)
         {
             _shieldCount -= 1;
-            //Debug.Log("Shield count is: " + _shieldCount);
-
             switch (_shieldCount)
             {
                 case 1:
                     {
                         _color.a = .5f;
-                        _color.b = .5f;
                         _shieldColor.material.color = _color;
                         break;
                     }
                 case 2:
                     {
                         _color.a = .75f;
-                        _color.b = .75f;
                         _shieldColor.material.color = _color;
                         break;
                     }
                 case 3:
                     {
                         _color.a = 1.0f;
-                        _color.b = 1.0f;
                         _shieldColor.material.color = _color;
                         break;
                     }
@@ -254,21 +262,18 @@ public class Player : MonoBehaviour
             case 1:
                 {
                     _color.a = .5f;
-                    _color.b = .5f;
                     _shieldColor.material.color = _color;
                     break;
                 }
             case 2:
                 {
                     _color.a = .75f;
-                    _color.b = .75f;
                     _shieldColor.material.color = _color;
                     break;
                 }
             case 3:
                 {
                     _color.a = 1.0f;
-                    _color.b = 1.0f;
                     _shieldColor.material.color =_color;
                     break;
                 }
@@ -293,6 +298,12 @@ public class Player : MonoBehaviour
         _score += points;
         _uiManager.UIScoreUpdate(_score);
 
+    }
+
+    public void ResetAmmoCount()
+    {
+        _ammoCount = 15;
+        _uiManager.AmmoCountUpdate(_ammoCount);
     }
 
 }
