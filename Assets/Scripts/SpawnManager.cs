@@ -51,7 +51,7 @@ public class SpawnManager : MonoBehaviour
         Vector3 location;
         while (_stopSpawning == false)
         {
-            int randomPowerup = (Random.Range(0, 3));
+            int randomPowerup = (Random.Range(0, 4));
             int randomSecs = Random.Range(3, 8);
             float randomX = Random.Range(-10f, 10f);
             location = new Vector3(randomX, 8.0f, 0f);

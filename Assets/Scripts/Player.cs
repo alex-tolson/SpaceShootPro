@@ -70,6 +70,7 @@ private Color _color = Color.white;
             {
                 _ammoCount = 0;
                 _audioManager.PlayEmptyChamberFx();
+                Debug.Log("Out of Ammo");
             }
             else
             {
@@ -101,7 +102,6 @@ private Color _color = Color.white;
         }
         _ammoCount--;
         _uiManager.AmmoCountUpdate(_ammoCount);
-        //Debug.Log("Ammo Count is " + _ammoCount);
         _audioManager.PlayLaserFx();
     }
 
@@ -253,7 +253,6 @@ private Color _color = Color.white;
     {
         _isShieldsActive = true;
         _shieldCount += 1;
-        Debug.Log("Shield count is: " + _shieldCount);
 
         _shieldVisual.gameObject.SetActive(true);
 
@@ -304,6 +303,14 @@ private Color _color = Color.white;
     {
         _ammoCount = 15;
         _uiManager.AmmoCountUpdate(_ammoCount);
+    }
+
+    public void AmmoPowerup()
+    {
+        _ammoCount += 15;
+        _uiManager.AmmoCountUpdate(_ammoCount);
+        Debug.Log("Ammo reloaded");
+
     }
 
 }
