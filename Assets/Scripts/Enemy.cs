@@ -71,7 +71,7 @@ public class Enemy : MonoBehaviour
             {
                 _player.ScoreUpdate(10);
             }
-            Destroy(other.gameObject);
+            //Destroy(other.gameObject);
             _speed = 0;
             _animator.SetTrigger("OnEnemyDeath");
             _audioManager.PlayExplosionFx();

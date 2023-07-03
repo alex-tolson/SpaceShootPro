@@ -42,5 +42,16 @@ public class Laser : MonoBehaviour
         {
             other.GetComponent<Player>().Damage();
         }
+
+        //// if laser collides with Player
+
+        //if (other.CompareTag("Enemy")) // if laser collides with enemy, if lasers' parent is beams
+        //{ 
+        //    if (this.transform.parent.name == "Beams(Clone)")
+        //    {
+        //        //Destroy(this.transform.parent.gameObject); 
+        //        //destroy laser
+        //    }
+        //}
     }
 }

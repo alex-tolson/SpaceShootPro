@@ -60,6 +60,16 @@ public class Powerup : MonoBehaviour
                         player.AmmoPowerup();
                         break;
                     }
+                case 4:
+                    {
+                        player.OneUpPowerup();
+                        break;
+                    }
+                case 5:
+                    {
+                        player.BeamsPowerup();
+                        break;
+                    }
                 default:
                     {
                         Debug.Log("Default");

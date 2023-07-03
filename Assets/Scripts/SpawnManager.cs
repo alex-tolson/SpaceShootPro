@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using static UnityEditor.FilePathAttribute;
 
 public class SpawnManager : MonoBehaviour
 {
@@ -24,6 +25,7 @@ public class SpawnManager : MonoBehaviour
     {
         StartCoroutine("SpawnEnemyRoutine");
         StartCoroutine("SpawnPowerupRoutine");
+        StartCoroutine("SpawnRarePowerupRoutine");
     }
 
     IEnumerator SpawnEnemyRoutine()
@@ -34,7 +36,7 @@ public class SpawnManager : MonoBehaviour
         while (_stopSpawning == false)              
         {
             float randX = Random.Range(-10f, 10f); 
-            loc = new Vector3(randX, 8.0f, 0f);
+            loc = new Vector3(randX, 10.0f, 0f);
 
             GameObject newEnemy = Instantiate(enemyPrefab, loc, Quaternion.identity);
 
@@ -51,14 +53,28 @@ public class SpawnManager : MonoBehaviour
         Vector3 location;
         while (_stopSpawning == false)
         {
-            int randomPowerup = (Random.Range(0, 4));
+            int randomPowerup = (Random.Range(0, 5));
             int randomSecs = Random.Range(3, 8);
             float randomX = Random.Range(-10f, 10f);
-            location = new Vector3(randomX, 8.0f, 0f);
+            location = new Vector3(randomX, 10.0f, 0f);
 
             Instantiate(powerups[randomPowerup], location, Quaternion.identity);
 
             yield return new WaitForSeconds(randomSecs);
+        }
+    }
+
+    IEnumerator SpawnRarePowerupRoutine()
+    {
+        while (_stopSpawning == false)
+        {
+            int randomNum = (Random.Range(15, 27));
+            yield return new WaitForSeconds(randomNum);
+
+            float randomX = Random.Range(-10f, 10f);
+            Vector3 location = new Vector3(randomX, 10.0f, 0f);
+
+            Instantiate(powerups[5], location, Quaternion.identity);
         }
     }
 
