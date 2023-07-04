@@ -109,6 +109,7 @@ public class Player : MonoBehaviour
 
         CalculateThrusters();
     }
+
     void CalculateThrusters()
     {
         if (Input.GetKey(KeyCode.LeftShift) && _thrustersSlider.AreThrustersCharging() == false)
@@ -117,6 +118,11 @@ public class Player : MonoBehaviour
             _thrustersSlider.UpdateThrustersUI();
 
             _currentSpeed = _speed * 1.5f;
+
+            if (_thrustersSlider.AreThrustersDepleted() == true)
+            {
+                _currentSpeed = _speed;
+            }
         }
         else if (Input.GetKeyUp(KeyCode.LeftShift))
         {

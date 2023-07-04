@@ -8,30 +8,29 @@ public class ThrustersSlider : MonoBehaviour
     [SerializeField] private float _maxThrusters;
     [SerializeField] private float _minThrusters;
     [SerializeField] private float _currentThrusters;
+
     Coroutine _corou = null;
     private bool _thrustersCharging = false;
-    
 
-    void Start()
-    {
-        _maxThrusters = 100.0f;
-        _minThrusters = 0.0f;
-    }
+    private bool _thrustersDepleted;
+    
 
     public void SetThrusters(float maxThrusterValue)
     {
         _maxThrusters = maxThrusterValue;
 
         _currentThrusters = _maxThrusters;
+        _minThrusters = 0;
     }
-
+    
     public void BurnThrusters(float amount)
     {
         _thrustersCharging = false;
-        _currentThrusters -= amount;// *Time.deltaTime;
-        if (_currentThrusters < _minThrusters)
+        _currentThrusters -= amount;  
+        if (_currentThrusters <= _minThrusters)
         {
             _currentThrusters = 0;
+            _thrustersDepleted = true;
         }
     }
 
@@ -52,13 +51,14 @@ public class ThrustersSlider : MonoBehaviour
             yield return new WaitForSeconds(2.0f);
         }
 
-        while (_currentThrusters <= _maxThrusters)
+        while (_currentThrusters < _maxThrusters)
         {
             _currentThrusters += amount;
             yield return new WaitForSeconds(Time.deltaTime);
             UpdateThrustersUI();
         }
         _thrustersCharging = false;
+        _thrustersDepleted = false;
     }
 
     public void UpdateThrustersUI()
@@ -69,6 +69,10 @@ public class ThrustersSlider : MonoBehaviour
     public bool AreThrustersCharging()
     {
         return _thrustersCharging;
+    }
+    public bool AreThrustersDepleted()
+    {
+        return _thrustersDepleted;
     }
         
 }
