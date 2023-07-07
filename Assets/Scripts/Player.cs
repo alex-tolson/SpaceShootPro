@@ -255,6 +255,8 @@ public class Player : MonoBehaviour
 
         if (_lives < 1)
         {
+            _lives = 0;
+
             if (_spawnManager == null)
             {
                 Debug.LogError("Player::_spawnManager is null");

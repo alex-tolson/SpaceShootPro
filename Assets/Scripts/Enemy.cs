@@ -11,6 +11,7 @@ public class Enemy : MonoBehaviour
     [SerializeField] private int _fireRate;
     [SerializeField] private float _canFire = -1f;
     [SerializeField] private GameObject _laserPrefab;
+    [SerializeField] private CameraShake _camShake;
 
     private void Start()
     {
@@ -32,8 +33,13 @@ public class Enemy : MonoBehaviour
             Debug.LogError("Asteroid::AudioSource is null");
         }
         _offset = new Vector3(0.0f, -1.75f, 0.0f);
+        //
+        _camShake = GameObject.Find("Main Camera").GetComponent<CameraShake>();
+        if(_camShake == null)
+        {
+            Debug.LogError("Enemy::CameraShake is null");
+        }
 
-        StartCoroutine(FireLaserRoutine());
     }
 
     void Update()
@@ -48,6 +54,7 @@ public class Enemy : MonoBehaviour
 
     void EnemyMov()
     {
+        StartCoroutine(FireLaserRoutine());
         transform.Translate(Vector3.down * _speed * Time.deltaTime);
     }
 
@@ -58,7 +65,8 @@ public class Enemy : MonoBehaviour
         {
             if (_player != null)
             {
-                _player.Damage();                
+                _player.Damage();
+                _camShake.StartCamShake();
             }
             _speed = 0;
             _animator.SetTrigger("OnEnemyDeath");
@@ -71,7 +79,7 @@ public class Enemy : MonoBehaviour
             {
                 _player.ScoreUpdate(10);
             }
-            //Destroy(other.gameObject);
+
             _speed = 0;
             _animator.SetTrigger("OnEnemyDeath");
             _audioManager.PlayExplosionFx();

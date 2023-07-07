@@ -1,10 +1,21 @@
 using System.Net.Sockets;
+using System.Xml.Linq;
 using UnityEngine;
+using static UnityEngine.UIElements.UxmlAttributeDescription;
 
 public class Laser : MonoBehaviour
 {
     [SerializeField] private float _speed = 8.0f;
+    [SerializeField] private CameraShake _camShake;
 
+    private void Start()
+    {
+        _camShake = GameObject.Find("Main Camera").GetComponent<CameraShake>();
+        if (_camShake == null)
+        {
+            Debug.LogError("Laser::CameraShake is null");
+        }
+    }
     void Update()
     {
         if (this.transform.parent == null) //No parent = regular laser
@@ -41,17 +52,8 @@ public class Laser : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             other.GetComponent<Player>().Damage();
+            _camShake.StartCamShake();
         }
 
-        //// if laser collides with Player
-
-        //if (other.CompareTag("Enemy")) // if laser collides with enemy, if lasers' parent is beams
-        //{ 
-        //    if (this.transform.parent.name == "Beams(Clone)")
-        //    {
-        //        //Destroy(this.transform.parent.gameObject); 
-        //        //destroy laser
-        //    }
-        //}
     }
 }
