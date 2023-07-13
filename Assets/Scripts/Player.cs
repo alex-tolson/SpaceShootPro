@@ -1,4 +1,5 @@
 using System.Collections;
+using TMPro;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -40,8 +41,13 @@ public class Player : MonoBehaviour
     [SerializeField] private SpriteRenderer _shieldColor;
     //-----Ammo Count UI
     [SerializeField] private int _ammoCount;
+    private int _ammoMaxCount = 99;
+    //-----Rare Powerup
     GameObject beamsGO;
+    //-----Thrusters
     private ThrustersSlider _thrustersSlider;
+    //-----Correction of Lasers from following the Enemy movement
+    [SerializeField] private GameObject _playerLaserContainer;
 
     void Start()
     {
@@ -49,7 +55,7 @@ public class Player : MonoBehaviour
         _offset = new Vector3(0f, 1.05f, 0f);
         _offsetTripleShot = new Vector3(0f, 1.5f, 0f);
         _offsetBeams = new Vector3(0f, -1f, 0f);
-        transform.position = new Vector3(0, 0, 0);
+        transform.position = new Vector3(0f, -4.5f, 0f);
 
         _spawnManager = GameObject.Find("SpawnManager").GetComponent<SpawnManager>();
 
@@ -71,6 +77,7 @@ public class Player : MonoBehaviour
         {
             Debug.LogError("Player::ThrustersSlider is null");
         }
+        //beams is null;
         _thrustersSlider.SetThrusters(100);
         _thrustersSlider.UpdateThrustersUI();
     }
@@ -141,7 +148,8 @@ public class Player : MonoBehaviour
         }
         else
         {
-            Instantiate(_laserPrefab, transform.position + _offset, Quaternion.identity);
+            GameObject laserGameObject = Instantiate(_laserPrefab, transform.position + _offset, Quaternion.identity);
+            laserGameObject.transform.parent = _playerLaserContainer.transform;
         }
         _ammoCount--;
         _uiManager.AmmoCountUpdate(_ammoCount);
@@ -164,7 +172,7 @@ public class Player : MonoBehaviour
             transform.Translate(dir * _currentSpeed * Time.deltaTime);
         }
 
-        transform.position = new Vector3(transform.position.x, Mathf.Clamp(transform.position.y, -3.6f, 0));
+        transform.position = new Vector3(transform.position.x, Mathf.Clamp(transform.position.y, -4.5f, 0));
 
         if (transform.position.x > 11.3f)
         {
@@ -265,7 +273,6 @@ public class Player : MonoBehaviour
             _spawnManager.OnPlayerDeath();
 
             Destroy(this.gameObject);
-
         }
     }
 
@@ -273,7 +280,6 @@ public class Player : MonoBehaviour
     {
         _isTripleShotActive = true;
         StartCoroutine("TripleShotPowerDownRoutine");
-
     }
 
     IEnumerator TripleShotPowerDownRoutine()
@@ -350,9 +356,14 @@ public class Player : MonoBehaviour
         _uiManager.AmmoCountUpdate(_ammoCount);
     }
 
+
     public void AmmoPowerup()
     {
         _ammoCount += 15;
+        if (_ammoCount > _ammoMaxCount)
+        {
+            _ammoCount = _ammoMaxCount;
+        }
         _uiManager.AmmoCountUpdate(_ammoCount);
     }
 
@@ -425,7 +436,7 @@ public class Player : MonoBehaviour
         yield return new WaitForSeconds(5.0f);
         _collectedBeamsPowerup = false;
         _beamsActivated = false;
-        Destroy(beamsGO.gameObject);
+        Destroy(beamsGO);
     }
 
   

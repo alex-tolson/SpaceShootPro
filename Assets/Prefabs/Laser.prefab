@@ -145,4 +145,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _speed: 8
-  _tripleShot: {fileID: 2122170778678322266, guid: 48e20402f32cd53409622dd5e85ce927, type: 3}
+  _selfie: {fileID: 8893863637052743646}

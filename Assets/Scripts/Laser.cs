@@ -1,7 +1,4 @@
-using System.Net.Sockets;
-using System.Xml.Linq;
 using UnityEngine;
-using static UnityEngine.UIElements.UxmlAttributeDescription;
 
 public class Laser : MonoBehaviour
 {
@@ -18,32 +15,43 @@ public class Laser : MonoBehaviour
     }
     void Update()
     {
-        if (this.transform.parent == null) //No parent = regular laser
+        switch (transform.parent.name)
         {
-            transform.Translate(Vector3.up * _speed * Time.deltaTime);
-            if (transform.position.y > 8)
-            {
-                Destroy(this.gameObject);
-            }
-        }
+            case "PlayerLaserContainer":        //has PlayerLaserContainer parent = Player's regular laser
+                {
+                    transform.Translate(Vector3.up * _speed * Time.deltaTime);
+                    if (transform.position.y > 8)
+                    {
+                        Destroy(gameObject);
+                    }
+                    break;
+                }
 
-        else if (this.transform.parent.name == "TripleShot(Clone)") // has a triple shot parent = triple shot
-        {
-            transform.Translate(Vector3.up * _speed * Time.deltaTime);
+            case "TripleShot(Clone)":           // has a triple shot parent = triple shot
+                {
+                    transform.Translate(Vector3.up * _speed * Time.deltaTime);
 
-            if (transform.position.y > 8)
-            {
-                Destroy(this.transform.parent.gameObject);
-               
-            }
-        }
-        else if (transform.parent.name == "Enemy(Clone)")
-        {
-            transform.Translate(Vector3.down * _speed * Time.deltaTime);
-            if (transform.position.y < -8)
-            {
-                Destroy(this.gameObject);
-            }
+                    if (transform.position.y > 8)
+                    {
+                        Destroy(transform.parent.gameObject);
+
+                    }
+                    break;
+                }
+            case "Enemy(Clone)":
+                {
+                    transform.Translate(Vector3.down * _speed * Time.deltaTime); // has no parent = enemy laser
+                    if (transform.position.y < -8)
+                    {
+                        Destroy(gameObject);
+                    }
+                    break;
+                }
+            default:
+                {
+                    //Debug.Log("Hi Beams");
+                    break;
+                }
         }
     }
 

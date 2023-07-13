@@ -52,6 +52,14 @@ MonoBehaviour:
   _fireRate: 0
   _canFire: -1
   _laserPrefab: {fileID: 5617082381968102715, guid: 20e7a8a3a916e3248ba19991fa04a65f, type: 3}
+  _camShake: {fileID: 0}
+  _enemyTypeId: 0000000001000000
+  _enemyType: 0
+  _leftSideScreen: {x: 0, y: 0, z: 0}
+  _rightSideScreen: {x: 0, y: 0, z: 0}
+  _goRight: 0
+  _dist2SideScreen: 0
+  enemyLasers: {fileID: 311424508766309115}
 --- !u!212 &7792447623874585096
 SpriteRenderer:
   m_ObjectHideFlags: 0
