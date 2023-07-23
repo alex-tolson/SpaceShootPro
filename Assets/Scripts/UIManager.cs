@@ -10,15 +10,19 @@ public class UIManager : MonoBehaviour
 
     [SerializeField] private Image _livesImg;
 
-    [SerializeField]private Sprite[] _livesSprites;
+    [SerializeField] private Sprite[] _livesSprites;
 
     [SerializeField] private TMP_Text _gameOverText;
 
-    [SerializeField]private TMP_Text _restartText;
+    [SerializeField] private TMP_Text _restartText;
+
+    private SpawnManager _spawnManager;
 
     private GameManager _gameManager;
 
     [SerializeField] private TMP_Text _ammoCountText;
+    [SerializeField] private TMP_Text _waveCountText;
+    [SerializeField] private TMP_Text _waveTimeText;
 
     // Start is called before the first frame update
     void Start()
@@ -26,21 +30,23 @@ public class UIManager : MonoBehaviour
         _scoreText.text = "Score: 0";
         _gameOverText.gameObject.SetActive(false);
         _restartText.gameObject.SetActive(false);
+        //
         _gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         if (_gameManager == null)
         {
             Debug.LogError("UIManager::GameManager is null");
         }
-    }
-
-    private void Update()
-    {
-
+        //
+        _spawnManager = GameObject.Find("SpawnManager").GetComponent<SpawnManager>();
+        if (_spawnManager == null)
+        {
+            Debug.LogError("SpawnManager:: SpawnManager is null");
+        }
     }
 
     public void UIScoreUpdate(int playerScore)
     {
-        _scoreText.text = "Score: "+ playerScore;
+        _scoreText.text = "Score: " + playerScore;
     }
 
     public void UpdateLives(int currentLives)
@@ -59,7 +65,7 @@ public class UIManager : MonoBehaviour
             _gameOverText.text = " ";
 
             yield return new WaitForSeconds(.75f);
-        }       
+        }
     }
 
     public void AmmoCountUpdate(int ammoCount)
@@ -73,5 +79,24 @@ public class UIManager : MonoBehaviour
         StartCoroutine(ActivateGameOverTextRoutine());
         _restartText.gameObject.SetActive(true);
         _gameManager.GameOver();
+    }
+
+    IEnumerator DisplayWaveInfoCorou(int Count, float Time)
+    {
+        _waveCountText.gameObject.SetActive(true);
+        _waveTimeText.gameObject.SetActive(true);
+
+        _waveCountText.text = "Wave: " + Count;
+        _waveTimeText.text = "Time: " + Time;
+        yield return new WaitForSeconds(3.0f);
+
+        _waveCountText.gameObject.SetActive(false);
+        _waveTimeText.gameObject.SetActive(false);
+        _spawnManager.StartSpawning();
+    }
+
+    public void DisplayWaveInfo(int c, float t)
+    {
+        StartCoroutine(DisplayWaveInfoCorou(c, t));
     }
 }

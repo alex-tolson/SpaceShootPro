@@ -106,7 +106,6 @@ public class Player : MonoBehaviour
             {
                 _ammoCount = 0;
                 _audioManager.PlayEmptyChamberFx();
-                Debug.Log("Out of Ammo");
             }
             else
             {

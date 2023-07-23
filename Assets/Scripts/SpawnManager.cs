@@ -1,18 +1,24 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
-using static UnityEditor.FilePathAttribute;
 
 public class SpawnManager : MonoBehaviour
 {
     [SerializeField] private GameObject enemyPrefab;
-    private WaitForSeconds _timeWaiting = new WaitForSeconds(5f);
-    
     [SerializeField] private GameObject _enemyContainer;
 
-    private bool _stopSpawning = false;
-
+    [SerializeField] public static List<GameObject> _enemies;
+   
     [SerializeField] private GameObject[] powerups;
     [SerializeField] private UIManager _uiManager;
+
+    [SerializeField] private float _timeWaiting = 5.0f;
+    [SerializeField] private float _timeTillSpawn = 5.0f;
+
+    [SerializeField] private int _waveCount = 0;
+    [SerializeField] private float _waveTime = 0;
+    [SerializeField] private float _timer;
+
 
     public void StartSpawning()
     {
@@ -20,24 +26,28 @@ public class SpawnManager : MonoBehaviour
         StartCoroutine("SpawnPowerupRoutine");
         StartCoroutine("SpawnRarePowerupRoutine");
     }
+    private void Update()
+    {
+
+    }
 
     IEnumerator SpawnEnemyRoutine()
     {
         yield return new WaitForSeconds(3f);
 
-        Vector3 loc;                                    
-        while (_stopSpawning == false)              
+        Vector3 loc;
+        while (_timer <= _waveTime)
         {
-            float randX = Random.Range(-10f, 10f); 
+            float randX = Random.Range(-10f, 10f);
             loc = new Vector3(randX, 10.0f, 0f);
 
             GameObject newEnemy = Instantiate(enemyPrefab, loc, Quaternion.identity);
-
+            _enemies.Add(newEnemy);
             newEnemy.transform.parent = _enemyContainer.transform;
-
-            yield return _timeWaiting;
+            yield return new WaitForSeconds(_timeTillSpawn);
+            _timer += _timeWaiting + Time.deltaTime;
         }
-        Debug.Log("StopSpawning set to true");
+        EndWave();
     }
 
     IEnumerator SpawnPowerupRoutine()
@@ -45,7 +55,7 @@ public class SpawnManager : MonoBehaviour
         yield return new WaitForSeconds(3.5f);
 
         Vector3 location;
-        while (_stopSpawning == false)
+        while (_timer <= _waveTime)
         {
             int randomPowerup = (Random.Range(0, 5));
             int randomSecs = Random.Range(3, 8);
@@ -56,12 +66,13 @@ public class SpawnManager : MonoBehaviour
 
             yield return new WaitForSeconds(randomSecs);
         }
-        Debug.Log("StopSpawning set to true");
     }
 
     IEnumerator SpawnRarePowerupRoutine()
     {
-        while (_stopSpawning == false)
+        yield return new WaitForSeconds(3f);
+
+        while (_timer <= _waveTime)
         {
             int randomNum = (Random.Range(15, 27));
             yield return new WaitForSeconds(randomNum);
@@ -71,14 +82,35 @@ public class SpawnManager : MonoBehaviour
 
             Instantiate(powerups[5], location, Quaternion.identity);
         }
-        Debug.Log("StopSpawning set to true");
     }
 
     public void OnPlayerDeath()
     {
-        Debug.Log("StopSpawning set to true");
-        _stopSpawning = true;
         _uiManager.GameOverActions();
-        
+    }
+
+    public void BeginWave(int Count, float Time)
+    {
+        _waveCount += Count;
+        _waveTime += Time;
+        _uiManager.DisplayWaveInfo(_waveCount, _waveTime);
+    }
+
+    public void EndWave()
+    {
+        _timeTillSpawn -= .3f;
+
+        foreach (GameObject enemy in _enemies)
+        {
+            if (enemy != null && enemy.CompareTag("Enemy"))
+            {
+                Destroy(enemy);
+            }          
+        }
+        _timer = 0;
+        _enemies.Clear();
+        StopAllCoroutines();
+        BeginWave(1, 10);
     }
 }
+

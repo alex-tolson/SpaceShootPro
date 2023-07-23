@@ -9,7 +9,9 @@ public class Asteroid : MonoBehaviour
 
     private SpawnManager _spawnManager;
     private AudioManager _audioManager;
+    private UIManager _uiManager;
     private Player _player;
+    
 
 
     void Start()
@@ -19,20 +21,27 @@ public class Asteroid : MonoBehaviour
         {
             Debug.LogError("Asteroid::SpawnManager is null");
         }
+        //
         _rot = new Vector3(0f, 0f, 90f);
-
+        //
         _audioManager = GameObject.Find("AudioManager").GetComponent<AudioManager>();
         if (_audioManager == null)
         {
             Debug.LogError("Asteroid::AudioSource is null");
         }
+        //
+        _uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();
+        if (_uiManager == null)
+        {
+            Debug.LogError("Asteroid::UIManager is null");
+        }
+        //
         _player = GameObject.Find("Player").GetComponent<Player>();
         if(_player == null)
         {
             Debug.LogError("Asteroid::Player is null");
         }
     }
-
 
     void Update()
     {   
@@ -47,12 +56,10 @@ public class Asteroid : MonoBehaviour
             _audioManager.PlayExplosionFx();
             _player.ResetAmmoCount();
             Destroy(go, 3f);
-            _spawnManager.StartSpawning();
+            _spawnManager.BeginWave(1, 10f);
             Destroy(GetComponent<Collider2D>());
-            Destroy(_asteroid, .3f);
+            //Destroy(_asteroid, .3f);
+            _asteroid.SetActive(false); //make a coroutine to wait 3 seconds and then go inactive
         }
     }
-
-
-
 }
