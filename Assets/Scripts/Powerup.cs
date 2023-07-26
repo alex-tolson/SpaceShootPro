@@ -67,9 +67,15 @@ public class Powerup : MonoBehaviour
                     }
                 case 5:
                     {
+                        player.AmmoJamPickup();
+                        break;
+                    }
+                case 6:
+                    {
                         player.BeamsPowerup();
                         break;
                     }
+
                 default:
                     {
                         Debug.Log("Default");

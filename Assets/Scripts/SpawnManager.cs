@@ -7,7 +7,7 @@ public class SpawnManager : MonoBehaviour
     [SerializeField] private GameObject enemyPrefab;
     [SerializeField] private GameObject _enemyContainer;
 
-    [SerializeField] public static List<GameObject> _enemies;
+    private static List<GameObject> _enemies = new List<GameObject>();
    
     [SerializeField] private GameObject[] powerups;
     [SerializeField] private UIManager _uiManager;
@@ -57,7 +57,7 @@ public class SpawnManager : MonoBehaviour
         Vector3 location;
         while (_timer <= _waveTime)
         {
-            int randomPowerup = (Random.Range(0, 5));
+            int randomPowerup = Random.Range(0,6);
             int randomSecs = Random.Range(3, 8);
             float randomX = Random.Range(-10f, 10f);
             location = new Vector3(randomX, 10.0f, 0f);
@@ -80,7 +80,7 @@ public class SpawnManager : MonoBehaviour
             float randomX = Random.Range(-10f, 10f);
             Vector3 location = new Vector3(randomX, 10.0f, 0f);
 
-            Instantiate(powerups[5], location, Quaternion.identity);
+            Instantiate(powerups[6], location, Quaternion.identity);
         }
     }
 

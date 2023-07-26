@@ -32,6 +32,7 @@ public class Player : MonoBehaviour
     private bool _isShieldsActive;
     private bool _collectedBeamsPowerup;
     private bool _beamsActivated;
+    private bool _isAmmoJamActive = false;
     //-----
     [SerializeField] private int _score;
     private AudioManager _audioManager;
@@ -86,33 +87,40 @@ public class Player : MonoBehaviour
     {
         CalculateMovement();
 
-        if (Input.GetKeyDown(KeyCode.Space) && (_collectedBeamsPowerup)) //Rare Beams Powerup
+        if (Input.GetKeyDown(KeyCode.Space) && (_isAmmoJamActive == true))
         {
-            if (_beamsActivated)
-            {
-                return;
-            }
-            else if (!_beamsActivated)
-            {
-                _beamsActivated = true;
-                beamsGO = Instantiate(_beamsPrefab, transform.position, Quaternion.identity);
-                beamsGO.transform.parent = this.transform;
-            }
-        }
-
-        else if (Input.GetKeyDown(KeyCode.Space) && Time.time > _canFire) //Fire Laser
-        {
-            if (_ammoCount <= 0)
-            {
-                _ammoCount = 0;
                 _audioManager.PlayEmptyChamberFx();
-            }
-            else
+                Debug.Log("Ammo Jam");
+        }
+        else
+        {
+            if (Input.GetKeyDown(KeyCode.Space) && (_collectedBeamsPowerup)) //Rare Beams Powerup
             {
-                FireLaser();
+                if (_beamsActivated)
+                {
+                    return;
+                }
+                else if (!_beamsActivated)
+                {
+                    _beamsActivated = true;
+                    beamsGO = Instantiate(_beamsPrefab, transform.position, Quaternion.identity);
+                    beamsGO.transform.parent = this.transform;
+                }
+            }
+
+            else if (Input.GetKeyDown(KeyCode.Space) && Time.time > _canFire) //Fire Laser
+            {
+                if (_ammoCount <= 0)
+                {
+                    _ammoCount = 0;
+                    _audioManager.PlayEmptyChamberFx();
+                }
+                else
+                {
+                    FireLaser();
+                }
             }
         }
-
         CalculateThrusters();
     }
 
@@ -278,7 +286,7 @@ public class Player : MonoBehaviour
     public void TripleShotActive()
     {
         _isTripleShotActive = true;
-        StartCoroutine("TripleShotPowerDownRoutine");
+        StartCoroutine(TripleShotPowerDownRoutine());
     }
 
     IEnumerator TripleShotPowerDownRoutine()
@@ -290,7 +298,7 @@ public class Player : MonoBehaviour
     public void SpeedBoostActive()
     {
         _isSpeedBoostActive = true;
-        StartCoroutine("SpeedBoostPowerDownRoutine");
+        StartCoroutine(SpeedBoostPowerDownRoutine());
     }
 
     IEnumerator SpeedBoostPowerDownRoutine()
@@ -354,7 +362,6 @@ public class Player : MonoBehaviour
         _ammoCount = 15;
         _uiManager.AmmoCountUpdate(_ammoCount);
     }
-
 
     public void AmmoPowerup()
     {
@@ -427,7 +434,7 @@ public class Player : MonoBehaviour
     public void BeamsPowerup()
     {
         _collectedBeamsPowerup = true;
-        StartCoroutine("BeamsPowerDownRoutine");
+        StartCoroutine(BeamsPowerDownRoutine());
     }
         
     IEnumerator BeamsPowerDownRoutine()
@@ -438,6 +445,16 @@ public class Player : MonoBehaviour
         Destroy(beamsGO);
     }
 
-  
+    public void AmmoJamPickup()
+    {
+        _isAmmoJamActive = true;
+        StartCoroutine(AmmoJamPowerDownRoutine());
+    }
+
+    IEnumerator AmmoJamPowerDownRoutine()
+    {
+        yield return new WaitForSeconds(5.0f);
+        _isAmmoJamActive = false;
+    }
 }
 
