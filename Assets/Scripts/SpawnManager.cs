@@ -10,26 +10,39 @@ public class SpawnManager : MonoBehaviour
     private static List<GameObject> _enemies = new List<GameObject>();
    
     [SerializeField] private GameObject[] powerups;
-    [SerializeField] private UIManager _uiManager;
+    private UIManager _uiManager;
+    private Player _player;
+    private float _timeWaiting = 5.0f;
+    private float _timeTillSpawn = 5f;
+    private float _timeBetweenRolls = 3.0f;
+    private int _waveCount = 0;
+    private float _waveTime = 0;
+    private float _timer;
+    [SerializeField] private int _percentiles;
+    [SerializeField] private int _randomPowerup;
 
-    [SerializeField] private float _timeWaiting = 5.0f;
-    [SerializeField] private float _timeTillSpawn = 5.0f;
+    private void Start()
+    {
+        _uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();
+        if (_uiManager == null)
+        {
+            Debug.LogError("SpawnManager::UIManager is null");
+        }
 
-    [SerializeField] private int _waveCount = 0;
-    [SerializeField] private float _waveTime = 0;
-    [SerializeField] private float _timer;
+        _player = GameObject.Find("Player").GetComponent<Player>();
+        if (_player == null)
+        {
+            Debug.LogError("SpawnManager::Player is null");
+        }
+    }
 
 
     public void StartSpawning()
     {
         StartCoroutine("SpawnEnemyRoutine");
         StartCoroutine("SpawnPowerupRoutine");
-        StartCoroutine("SpawnRarePowerupRoutine");
     }
-    private void Update()
-    {
 
-    }
 
     IEnumerator SpawnEnemyRoutine()
     {
@@ -55,32 +68,54 @@ public class SpawnManager : MonoBehaviour
         yield return new WaitForSeconds(3.5f);
 
         Vector3 location;
+
         while (_timer <= _waveTime)
         {
-            int randomPowerup = Random.Range(0,6);
-            int randomSecs = Random.Range(3, 8);
+            _percentiles = Random.Range(1, 101);
+
             float randomX = Random.Range(-10f, 10f);
             location = new Vector3(randomX, 10.0f, 0f);
 
-            Instantiate(powerups[randomPowerup], location, Quaternion.identity);
+            if (_percentiles <= 55)  //low tier is 1, 3, and 5
+            {
+                _randomPowerup = Random.Range(0, 6);
+                if ((_randomPowerup == 0) || (_randomPowerup == 2) || (_randomPowerup == 4))
+                {
+                    _randomPowerup += 1;
+                }
 
-            yield return new WaitForSeconds(randomSecs);
-        }
-    }
+                Instantiate(powerups[_randomPowerup], location, Quaternion.identity);
+            }
+            else if ((_percentiles > 56) && (_percentiles < 86)) // middle tier is 0 and 2
+            {
+                _randomPowerup = Random.Range(0, 2);
 
-    IEnumerator SpawnRarePowerupRoutine()
-    {
-        yield return new WaitForSeconds(3f);
+                if (_randomPowerup > 0)
+                {
+                    _randomPowerup += 1;
+                }
 
-        while (_timer <= _waveTime)
-        {
-            int randomNum = (Random.Range(15, 27));
-            yield return new WaitForSeconds(randomNum);
+                Instantiate(powerups[_randomPowerup], location, Quaternion.identity);
+            }
+            else if ((_percentiles < 85)) // middle tier is 4 and 6
+            {
+                if (_player.HasTakenDamage())
+                {
+                    _randomPowerup = Random.Range(4, 6);
 
-            float randomX = Random.Range(-10f, 10f);
-            Vector3 location = new Vector3(randomX, 10.0f, 0f);
+                    if (_randomPowerup > 4)
+                    {
+                        _randomPowerup += 1;
+                    }
+                }
+                else
+                {
+                    _randomPowerup = 6;
+                }
 
-            Instantiate(powerups[6], location, Quaternion.identity);
+                Instantiate(powerups[_randomPowerup], location, Quaternion.identity);
+            }
+            yield return new WaitForSeconds(_timeBetweenRolls);
         }
     }
 
@@ -98,7 +133,17 @@ public class SpawnManager : MonoBehaviour
 
     public void EndWave()
     {
-        _timeTillSpawn -= .3f;
+        _timeBetweenRolls += .2f;
+        _timeTillSpawn -= .2f;
+
+        if (_timeBetweenRolls > 10)
+        {
+            _timeBetweenRolls = 10;
+        }
+        if (_timeTillSpawn < 1)
+        {
+            _timeTillSpawn = 1;
+        }
 
         foreach (GameObject enemy in _enemies)
         {
@@ -112,5 +157,6 @@ public class SpawnManager : MonoBehaviour
         StopAllCoroutines();
         BeginWave(1, 10);
     }
+
 }
 

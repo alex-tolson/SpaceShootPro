@@ -8,55 +8,73 @@ public class Enemy : MonoBehaviour
     private Player _player;
     private AudioManager _audioManager;
     [SerializeField] private Vector3 _offset;
+    [SerializeField] private Vector3 _heatSeekOffset;
     [SerializeField] private int _fireRate;
     [SerializeField] private float _canFire = -1f;
     [SerializeField] private GameObject _laserPrefab;
+    [SerializeField] private GameObject _heatSeekLaserPrefab;
     //cam shake
-    [SerializeField] private CameraShake _camShake;
+    private CameraShake _camShake;
     //new enemy
     [SerializeField] private int _enemyType;
-    //-----New enemy movement
-    [SerializeField] private Vector3 _leftSideScreen;
-    [SerializeField] private Vector3 _rightSideScreen;
-    [SerializeField] private bool _goRight;
-    [SerializeField] private float _dist2SideScreen;
+    //-----New enemy movement--------////
+    private Vector3 _leftSideScreen;
+    private Vector3 _rightSideScreen;
+    private bool _goRight;
+    private float _dist2SideScreen;
+    //New Enemy Movement - enemy Type 2-----/////
+    [SerializeField] private float _waveSpeed = 4f;
+    private float _waveHeight = 2;
+    private float _waveFrequency = 2;
+    private float _sineWave;
+    private Vector3 _sineCurve;
+    private bool _enemyIsType2 = false;
+
+
 
     private void Start()
     {
         _player = GameObject.Find("Player").GetComponent<Player>();
-        if (_player == null)
+        if (_player == null)//-----------NullChecking Player------------
         {
             Debug.LogError("Enemy::Player null");
         }
-        //
+
         _animator = GetComponent<Animator>();
-        if (_animator == null)
+        if (_animator == null)//-----------NullChecking Animator------------
         {
             Debug.LogError("Enemy::Animator null");
         }
-        //
+
         _audioManager = GameObject.Find("AudioManager").GetComponent<AudioManager>();
-        if (_audioManager == null)
+        if (_audioManager == null)//-----------NullChecking Audio Manager------------
         {
             Debug.LogError("Asteroid::AudioSource is null");
         }
-        _offset = new Vector3(0.0f, -1.75f, 0.0f);
-        //
+
         _camShake = GameObject.Find("Main Camera").GetComponent<CameraShake>();
-        if (_camShake == null)
+        if (_camShake == null)//-----------NullChecking Camera Shake------------
         {
             Debug.LogError("Enemy::CameraShake is null");
         }
-  
-        StartCoroutine(FireLaserRoutine());
 
-        _enemyType = Random.Range(0, 2);
+        _offset = new Vector3(0.0f, -1.75f, 0.0f);
+        _heatSeekOffset = new Vector3(0.0f, -2.0f, 0.0f);
+        //-------------New Enemy Movement - enemy Type 2---------------/////
+        _enemyType = Random.Range(0, 3);
+        // ------------------------------------------------------------------------
 
         if (_enemyType == 1)
         {
             transform.position = new Vector3(10.5f, Random.Range(.5f, 5f), transform.position.z);
         }
-    }
+        if (_enemyType == 2)
+        {
+            _speed = 1.75f;
+            _enemyIsType2 = true;
+        }
+        StartCoroutine(FireLaserRoutine());
+    } 
 
     void Update()
     {
@@ -68,42 +86,66 @@ public class Enemy : MonoBehaviour
 
     void EnemyMov(int enemyId)
     {
-
-        if (enemyId == 0)
+        switch (enemyId)
         {
-            transform.Translate(Vector3.down * _speed * Time.deltaTime);
-
-            if (transform.position.y < -6f)
-            {
-                float randomX = Random.Range(-10f, 10f);
-                transform.position = new Vector3(randomX, 8f, transform.position.z);
-            }
-        }
-        else if (enemyId == 1)
-        {
-            if (_goRight == false)             
-            {
-                _dist2SideScreen = Vector3.Distance(transform.position, _leftSideScreen); 
-
-                transform.Translate(Vector3.left * _speed * Time.deltaTime);      
-                if (_dist2SideScreen <= 1f)
+            case 0:
                 {
-                    _goRight = true;
+                    transform.Translate(Vector3.down * _speed * Time.deltaTime);
+
+                    if (transform.position.y < -6f)
+                    {
+                        float randomX = Random.Range(-10f, 10f);
+                        transform.position = new Vector3(randomX, 8f, transform.position.z);
+                    }
+                    break;
                 }
-            }
-            else      
-            {
-                _dist2SideScreen = Vector3.Distance(transform.position, _rightSideScreen); 
-
-                transform.Translate(Vector3.right * _speed * Time.deltaTime);
-
-                if (_dist2SideScreen <= 1f)                                             
+            case 1:
                 {
-                    _goRight = false;                                             
+                    if (_goRight == false)
+                    {
+                        _dist2SideScreen = Vector3.Distance(transform.position, _leftSideScreen);
+
+                        transform.Translate(Vector3.left * _speed * Time.deltaTime);
+                        if (_dist2SideScreen <= 1f)
+                        {
+                            _goRight = true;
+                        }
+
+                    }
+                    else
+                    {
+                        _dist2SideScreen = Vector3.Distance(transform.position, _rightSideScreen);
+
+                        transform.Translate(Vector3.right * _speed * Time.deltaTime);
+
+                        if (_dist2SideScreen <= 1f)
+                        {
+                            _goRight = false;
+                        }
+                    }
+                    break;
+
                 }
-            }
+            case 2:
+                {
+
+                    _sineWave = _waveHeight * Mathf.Sin((_waveSpeed * Time.time) + (_waveFrequency));
+                    _sineCurve = new Vector3(_sineWave, -1, 0);
+
+                    transform.Translate(_sineCurve * _speed * Time.deltaTime);
+
+                    if (transform.position.y < -6f)
+                    {
+                        float randomX = Random.Range(-10f, 10f);
+                        transform.position = new Vector3(randomX, 8f, transform.position.z);
+                    }
+                    break;
+                }
+            default:
+                { break; }
         }
     }
+
 
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -138,16 +180,26 @@ public class Enemy : MonoBehaviour
     {
         while (true)
         {
-            _fireRate = Random.Range(3, 5);
+            _fireRate = Random.Range(2, 5);
             yield return new WaitForSeconds(_fireRate);
 
-            if (_canFire < Time.deltaTime + _fireRate)
+            if (isEnemyType2() && (_canFire < Time.deltaTime + _fireRate))
+            {
+                _canFire += _fireRate;
+                GameObject laserGO = Instantiate(_heatSeekLaserPrefab, transform.position + _heatSeekOffset, Quaternion.identity);
+                laserGO.transform.parent = GameObject.Find("EnemyLaser").transform;
+            }
+            else if (_canFire < Time.deltaTime + _fireRate)
             {
                 _canFire += _fireRate;
                 GameObject laserGO = Instantiate(_laserPrefab, transform.position + _offset, Quaternion.identity);
-                laserGO.transform.parent = this.transform;
+                laserGO.transform.parent = GameObject.Find("EnemyLaser").transform;
             }
         }
     }
 
+    public bool isEnemyType2()
+    {
+        return _enemyIsType2;
+    }
 }

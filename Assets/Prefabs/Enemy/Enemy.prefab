@@ -49,17 +49,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _speed: 4
   _offset: {x: 0, y: 0, z: 0}
+  _heatSeekOffset: {x: 0, y: 0, z: 0}
   _fireRate: 0
   _canFire: -1
   _laserPrefab: {fileID: 5617082381968102715, guid: 20e7a8a3a916e3248ba19991fa04a65f, type: 3}
-  _camShake: {fileID: 0}
-  _enemyTypeId: 0000000001000000
+  _heatSeekLaserPrefab: {fileID: 8010192445039978352, guid: 328cdba51f4afc34a82311c9be0e0c34, type: 3}
   _enemyType: 0
-  _leftSideScreen: {x: 0, y: 0, z: 0}
-  _rightSideScreen: {x: 0, y: 0, z: 0}
-  _goRight: 0
-  _dist2SideScreen: 0
-  enemyLasers: {fileID: 311424508766309115}
+  _waveSpeed: 4
 --- !u!212 &7792447623874585096
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -145,7 +141,7 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.017359197, y: 0.07341796}
+  m_Offset: {x: 0.020736694, y: 0.30199325}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -156,7 +152,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1.9152807, y: 2.5424752}
+  m_Size: {x: 2.088292, y: 2.0853245}
   m_EdgeRadius: 0
 --- !u!95 &2692353503630685233
 Animator:

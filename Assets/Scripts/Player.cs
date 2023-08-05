@@ -456,5 +456,17 @@ public class Player : MonoBehaviour
         yield return new WaitForSeconds(5.0f);
         _isAmmoJamActive = false;
     }
+
+    public bool HasTakenDamage()
+    {
+        if (_lives < 3)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
 }
 
