@@ -158,5 +158,9 @@ public class SpawnManager : MonoBehaviour
         BeginWave(1, 10);
     }
 
+    public int whatWaveCountIsIt()
+    {
+        return _waveCount;
+    }
 }
 

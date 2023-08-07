@@ -1,4 +1,5 @@
 using System.Collections;
+using TMPro.EditorUtilities;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour
@@ -7,12 +8,16 @@ public class Enemy : MonoBehaviour
     private Animator _animator;
     private Player _player;
     private AudioManager _audioManager;
+
+    private SpawnManager _spawnManager;
     [SerializeField] private Vector3 _offset;
     [SerializeField] private Vector3 _heatSeekOffset;
     [SerializeField] private int _fireRate;
     [SerializeField] private float _canFire = -1f;
     [SerializeField] private GameObject _laserPrefab;
     [SerializeField] private GameObject _heatSeekLaserPrefab;
+    [SerializeField] private GameObject _shield;
+
     //cam shake
     private CameraShake _camShake;
     //new enemy
@@ -29,7 +34,6 @@ public class Enemy : MonoBehaviour
     private float _sineWave;
     private Vector3 _sineCurve;
     private bool _enemyIsType2 = false;
-
 
 
     private void Start()
@@ -51,29 +55,24 @@ public class Enemy : MonoBehaviour
         {
             Debug.LogError("Asteroid::AudioSource is null");
         }
-
         _camShake = GameObject.Find("Main Camera").GetComponent<CameraShake>();
         if (_camShake == null)//-----------NullChecking Camera Shake------------
         {
             Debug.LogError("Enemy::CameraShake is null");
         }
 
+        _spawnManager = GameObject.Find("SpawnManager").GetComponent<SpawnManager>();
+        if (_spawnManager == null)
+        {
+            Debug.LogError("Enemy::SpawnManager is null");
+        }
         _offset = new Vector3(0.0f, -1.75f, 0.0f);
         _heatSeekOffset = new Vector3(0.0f, -2.0f, 0.0f);
-        //-------------New Enemy Movement - enemy Type 2---------------/////
-        _enemyType = Random.Range(0, 3);
-        // ------------------------------------------------------------------------
+        //-------------Enemies by Waves---------------/////
 
-        if (_enemyType == 1)
-        {
-            transform.position = new Vector3(10.5f, Random.Range(.5f, 5f), transform.position.z);
-        }
-        if (_enemyType == 2)
-        {
-            _speed = 1.75f;
-            _enemyIsType2 = true;
-        }
-        StartCoroutine(FireLaserRoutine());
+        // ------------------------------------------------------------------------
+        EnemyBalancedSpawning();
+        StartCoroutine(FireLaserRoutine());   
     } 
 
     void Update()
@@ -141,8 +140,22 @@ public class Enemy : MonoBehaviour
                     }
                     break;
                 }
+            case 3:
+                {
+                    transform.Translate(Vector3.down * _speed * Time.deltaTime);
+
+                    if (transform.position.y < -6f)
+                    {
+                        float randomX = Random.Range(-10f, 10f);
+                        transform.position = new Vector3(randomX, 8f, transform.position.z);
+                    }
+                    break;
+
+                }
             default:
-                { break; }
+                { 
+                    break; 
+                }
         }
     }
 
@@ -161,18 +174,27 @@ public class Enemy : MonoBehaviour
             _audioManager.PlayExplosionFx();
             Destroy(gameObject, 2.5f);
         }
-        if (other.CompareTag("Laser"))
-        {
-            if (_player != null)
-            {
-                _player.ScoreUpdate(10);
-            }
 
-            _speed = 0;
-            _animator.SetTrigger("OnEnemyDeath");
-            _audioManager.PlayExplosionFx();
-            Destroy(GetComponent<Collider2D>());
-            Destroy(gameObject, 2.8f);
+        else if (other.CompareTag("Laser"))
+        {
+            if (_shield.activeInHierarchy == true)
+            {
+                _shield.SetActive(false);
+                _audioManager.PlayExplosionFx();
+            }
+            else
+            {
+                if (_player != null)
+                {
+                    _player.ScoreUpdate(10);
+                }
+
+                _speed = 0;
+                _animator.SetTrigger("OnEnemyDeath");
+                _audioManager.PlayExplosionFx();
+                Destroy(GetComponent<Collider2D>());
+                Destroy(gameObject, 2.8f);
+            }
         }
     }
 
@@ -201,5 +223,38 @@ public class Enemy : MonoBehaviour
     public bool isEnemyType2()
     {
         return _enemyIsType2;
+    }
+
+    private void EnemyBalancedSpawning()
+    {
+        if (_spawnManager.whatWaveCountIsIt() <= 3)
+        {
+            _enemyType = Random.Range(0, 3);
+
+        }
+        else if (_spawnManager.whatWaveCountIsIt() >= 4 && _spawnManager.whatWaveCountIsIt() <= 6)
+        {
+            _enemyType = Random.Range(0, 4);
+
+        }
+        else if (_spawnManager.whatWaveCountIsIt() >= 7)
+        {
+            _enemyType = Random.Range(0, 8);
+        }
+        //----------------------------------------------------------------------------------------------
+        if (_enemyType == 1)
+        {
+            transform.position = new Vector3(10.5f, Random.Range(.5f, 5f), transform.position.z);
+        }
+        else if (_enemyType == 2)
+        {
+            _speed = 1.75f;
+            _enemyIsType2 = true;
+        }
+        else if (_enemyType == 3)
+        {
+            _shield.SetActive(true);
+            
+        }
     }
 }
