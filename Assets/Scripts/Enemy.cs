@@ -1,5 +1,4 @@
 using System.Collections;
-using TMPro.EditorUtilities;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour
@@ -12,12 +11,15 @@ public class Enemy : MonoBehaviour
     private SpawnManager _spawnManager;
     [SerializeField] private Vector3 _offset;
     [SerializeField] private Vector3 _heatSeekOffset;
-    [SerializeField] private int _fireRate;
-    [SerializeField] private float _canFire = -1f;
+    [SerializeField] private Vector3 _smartEnemyLaserOffset;
+    [SerializeField] private float  _fireRate;
     [SerializeField] private GameObject _laserPrefab;
     [SerializeField] private GameObject _heatSeekLaserPrefab;
     [SerializeField] private GameObject _shield;
-
+    //Aggressive Enemies
+    [SerializeField] private GameObject _enemyThruster;
+    private float _dist;
+    public float _aggroSpeed = 2.5f;
     //cam shake
     private CameraShake _camShake;
     //new enemy
@@ -34,6 +36,11 @@ public class Enemy : MonoBehaviour
     private float _sineWave;
     private Vector3 _sineCurve;
     private bool _enemyIsType2 = false;
+    //Smart Enemy - Backwards Fire-CoolDown
+    private Vector3 localPosition;
+    [SerializeField] private bool _isBehindPlayer;
+    
+   
 
 
     private void Start()
@@ -62,32 +69,54 @@ public class Enemy : MonoBehaviour
         }
 
         _spawnManager = GameObject.Find("SpawnManager").GetComponent<SpawnManager>();
-        if (_spawnManager == null)
+        if (_spawnManager == null)//-----------NullChecking Spawn Manager------------
         {
             Debug.LogError("Enemy::SpawnManager is null");
         }
         _offset = new Vector3(0.0f, -1.75f, 0.0f);
         _heatSeekOffset = new Vector3(0.0f, -2.0f, 0.0f);
-        //-------------Enemies by Waves---------------/////
+        _smartEnemyLaserOffset = new Vector3(0f, 2.0f, 0f);
 
-        // ------------------------------------------------------------------------
+
+        //-------------Enemies by Waves---------------/////
         EnemyBalancedSpawning();
         StartCoroutine(FireLaserRoutine());   
     } 
 
     void Update()
     {
+        _dist = Vector3.Distance(transform.position, _player.transform.position);
+        localPosition = _player.transform.InverseTransformPoint(transform.position);
+
         _leftSideScreen = new Vector3(-10.5f, transform.position.y, transform.position.z);
         _rightSideScreen = new Vector3(10.5f, transform.position.y, transform.position.z);
+
 
         EnemyMov(_enemyType);
     }
 
     void EnemyMov(int enemyId)
     {
+        if (_dist < 5.0f)
+        {
+            if (_enemyThruster != null)
+            {
+                _enemyThruster.SetActive(true);
+                transform.position = Vector3.MoveTowards(transform.position, _player.transform.position, _aggroSpeed * Time.deltaTime);
+            }
+            
+        } //Aggressive Ramming Enemy functionality
+        else
+        { 
+            if (_enemyThruster != null)
+            {
+                _enemyThruster.SetActive(false);
+            } 
+        }
+
         switch (enemyId)
         {
-            case 0:
+            case 0: //Straight down enemies
                 {
                     transform.Translate(Vector3.down * _speed * Time.deltaTime);
 
@@ -98,7 +127,7 @@ public class Enemy : MonoBehaviour
                     }
                     break;
                 }
-            case 1:
+            case 1: //left to right to left enemies
                 {
                     if (_goRight == false)
                     {
@@ -125,7 +154,7 @@ public class Enemy : MonoBehaviour
                     break;
 
                 }
-            case 2:
+            case 2: //Sine Enemies
                 {
 
                     _sineWave = _waveHeight * Mathf.Sin((_waveSpeed * Time.time) + (_waveFrequency));
@@ -140,9 +169,32 @@ public class Enemy : MonoBehaviour
                     }
                     break;
                 }
-            case 3:
+            case 3: // Shield Enemies
                 {
                     transform.Translate(Vector3.down * _speed * Time.deltaTime);
+
+                    if (transform.position.y < -6f)
+                    {
+                        float randomX = Random.Range(-10f, 10f);
+                        transform.position = new Vector3(randomX, 8f, transform.position.z);
+                    }
+                    break;
+
+                }
+            case 4: //Smart enemies
+                {
+
+                    if (localPosition.y < 0f)
+                    {
+                        _isBehindPlayer = true;
+                    }
+                    else
+                    {
+                        _isBehindPlayer = false;
+                    }
+                    
+                    transform.Translate(Vector3.down * _speed * Time.deltaTime);
+
 
                     if (transform.position.y < -6f)
                     {
@@ -169,8 +221,10 @@ public class Enemy : MonoBehaviour
                 _player.Damage();
                 _camShake.StartCamShake();
             }
+
             _speed = 0;
             _animator.SetTrigger("OnEnemyDeath");
+            Destroy(_enemyThruster);
             _audioManager.PlayExplosionFx();
             Destroy(gameObject, 2.5f);
         }
@@ -188,10 +242,11 @@ public class Enemy : MonoBehaviour
                 {
                     _player.ScoreUpdate(10);
                 }
-
+                StopCoroutine(FireLaserRoutine());
                 _speed = 0;
                 _animator.SetTrigger("OnEnemyDeath");
                 _audioManager.PlayExplosionFx();
+                Destroy(_enemyThruster);
                 Destroy(GetComponent<Collider2D>());
                 Destroy(gameObject, 2.8f);
             }
@@ -202,18 +257,22 @@ public class Enemy : MonoBehaviour
     {
         while (true)
         {
-            _fireRate = Random.Range(2, 5);
+            _fireRate = 2/*Random.Range(2, 5)*/;
+
             yield return new WaitForSeconds(_fireRate);
 
-            if (isEnemyType2() && (_canFire < Time.deltaTime + _fireRate))
+            if (_isBehindPlayer)
+            { 
+                GameObject laserGO = Instantiate(_laserPrefab, transform.position + _smartEnemyLaserOffset, Quaternion.identity);
+                laserGO.transform.parent = GameObject.Find("SmartEnemyLaser").transform;
+            }
+            else if (isEnemyType2())
             {
-                _canFire += _fireRate;
                 GameObject laserGO = Instantiate(_heatSeekLaserPrefab, transform.position + _heatSeekOffset, Quaternion.identity);
                 laserGO.transform.parent = GameObject.Find("EnemyLaser").transform;
             }
-            else if (_canFire < Time.deltaTime + _fireRate)
-            {
-                _canFire += _fireRate;
+            else
+            { 
                 GameObject laserGO = Instantiate(_laserPrefab, transform.position + _offset, Quaternion.identity);
                 laserGO.transform.parent = GameObject.Find("EnemyLaser").transform;
             }
@@ -234,12 +293,12 @@ public class Enemy : MonoBehaviour
         }
         else if (_spawnManager.whatWaveCountIsIt() >= 4 && _spawnManager.whatWaveCountIsIt() <= 6)
         {
-            _enemyType = Random.Range(0, 4);
+            _enemyType = Random.Range(1, 4);
 
         }
         else if (_spawnManager.whatWaveCountIsIt() >= 7)
         {
-            _enemyType = Random.Range(0, 8);
+            _enemyType = Random.Range(3, 8);
         }
         //----------------------------------------------------------------------------------------------
         if (_enemyType == 1)
@@ -248,7 +307,7 @@ public class Enemy : MonoBehaviour
         }
         else if (_enemyType == 2)
         {
-            _speed = 1.75f;
+            //_speed = 1.75f;
             _enemyIsType2 = true;
         }
         else if (_enemyType == 3)
@@ -257,4 +316,8 @@ public class Enemy : MonoBehaviour
             
         }
     }
+
 }
+
+
+

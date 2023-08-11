@@ -1,6 +1,4 @@
-using System;
 using UnityEngine;
-using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class Laser : MonoBehaviour
 {
@@ -39,6 +37,17 @@ public class Laser : MonoBehaviour
                     break;
                 }
 
+            case "SmartEnemyLaser":
+                {
+                    transform.Translate(Vector3.up * _speed * Time.deltaTime);
+                    if (transform.position.y > 8)
+                    {
+                        Destroy(gameObject);
+                    }
+                    break;
+
+                }
+
             case "TripleShot(Clone)":           // has a triple shot parent = triple shot
                 {
                     transform.Translate(Vector3.up * _speed * Time.deltaTime);
@@ -55,7 +64,7 @@ public class Laser : MonoBehaviour
                     {
                         _speed = 2f;
 
-                        if (_dist < 5.0f)
+                        if (_dist < 2.0f)
                         {
                             transform.position = Vector3.MoveTowards(transform.position, _player.transform.position, _speed * Time.deltaTime);
                         }
