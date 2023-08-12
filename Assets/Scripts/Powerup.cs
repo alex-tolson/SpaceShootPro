@@ -6,6 +6,7 @@ public class Powerup : MonoBehaviour
     private Player player;
     [SerializeField] private int powerupID; // 0 = Triple Shot -- 1 = Speed -- 2 = Shields
     private AudioManager _audioManager;
+    [SerializeField] private GameObject _explosion;
 
     void Start()
     {
@@ -43,31 +44,37 @@ public class Powerup : MonoBehaviour
                 case 0:
                     {
                         player.TripleShotActive();
+                        _audioManager.PlayPowerupFx();
                         break;
                     }
                 case 1:
                     {
                         player.SpeedBoostActive();
+                        _audioManager.PlayPowerupFx();
                         break;
                     }
                 case 2:
                     {
                         player.ShieldsActive();
+                        _audioManager.PlayPowerupFx();
                         break;
                     }
                 case 3:
                     {
                         player.AmmoPowerup();
+                        _audioManager.PlayReloadChamberFx();
                         break;
                     }
                 case 4:
                     {
                         player.OneUpPowerup();
+                        _audioManager.PlayPowerupFx();
                         break;
                     }
                 case 5:
                     {
                         player.AmmoJamPickup();
+                        _audioManager.PlayEmptyChamberFx();
                         break;
                     }
                 case 6:
@@ -83,8 +90,16 @@ public class Powerup : MonoBehaviour
                     }
             }
 
-            _audioManager.PlayPowerupFx();
+            
             Destroy(this.gameObject);
+        }
+        else if (other.CompareTag("Laser"))
+        {
+            GameObject go = Instantiate(_explosion, transform.position, Quaternion.identity);
+            _audioManager.PlayExplosionFx();
+            Destroy(gameObject);
+            Destroy(go, 2.8f);
+            
         }
     }
 

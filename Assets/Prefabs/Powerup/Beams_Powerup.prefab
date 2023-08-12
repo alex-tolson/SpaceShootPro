@@ -158,3 +158,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _speed: 3
   powerupID: 6
+  _explosion: {fileID: 113165077134919788, guid: 532a75d770dbeef4da84ce2274607f56, type: 3}

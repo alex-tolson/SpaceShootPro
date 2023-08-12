@@ -10,6 +10,7 @@ public class AudioManager : MonoBehaviour
     [SerializeField] private AudioClip _explosionClip;
     [SerializeField] private AudioClip _powerUpClip;
     [SerializeField] private AudioClip _emptyChamberClip;
+    [SerializeField] private AudioClip _reloadChamberClip;
 
     private void Start()
     {
@@ -44,6 +45,10 @@ public class AudioManager : MonoBehaviour
     public void PlayEmptyChamberFx()
     {
         _audioSource.PlayOneShot(_emptyChamberClip, _volume);
+    }
+    public void PlayReloadChamberFx()
+    {
+        _audioSource.PlayOneShot(_reloadChamberClip, _volume);
     }
 }
 

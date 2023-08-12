@@ -4,7 +4,6 @@ public class Laser : MonoBehaviour
 {
     [SerializeField] private float _speed = 8.0f;
     [SerializeField] private CameraShake _camShake;
-    private Enemy _enemy;
     private Player _player;
     private float _dist;
 
@@ -62,7 +61,7 @@ public class Laser : MonoBehaviour
                 {
                     if (gameObject.name == "HeatSeekLaser(Clone)")
                     {
-                        _speed = 2f;
+                        _speed = 4f;
 
                         if (_dist < 2.0f)
                         {
@@ -95,6 +94,7 @@ public class Laser : MonoBehaviour
             _player.Damage();
             _camShake.StartCamShake();
         }
+
     }
 }
 

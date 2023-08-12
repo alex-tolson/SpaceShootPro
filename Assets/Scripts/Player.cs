@@ -121,6 +121,17 @@ public class Player : MonoBehaviour
             }
         }
         CalculateThrusters();
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            CollectPowerups();
+        }
+
+
+
+            //If "C" key is pressed
+            //create a a raycast 
+            //give raycast a radius
+            //all powerups in that radius will transform.Translate to players transform.position
     }
 
     void CalculateThrusters()
@@ -466,6 +477,13 @@ public class Player : MonoBehaviour
         {
             return false;
         }
+    }
+
+    public void CollectPowerups()
+    {
+        //LayerMask mask = LayerMask.GetMask("Powerup");
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, transform.TransformDirection(Vector2.down), 2.0f); //mask);
+        Debug.DrawRay(transform.position, transform.TransformDirection(Vector2.down) * 2.0f, Color.cyan);
     }
 }
 

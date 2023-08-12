@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 5217361732330120723}
   m_Layer: 0
   m_Name: AmmoJam_Powerup
-  m_TagString: Powerup
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -137,6 +137,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _speed: 3
   powerupID: 5
+  _explosion: {fileID: 113165077134919788, guid: 532a75d770dbeef4da84ce2274607f56, type: 3}
 --- !u!95 &5217361732330120723
 Animator:
   serializedVersion: 5

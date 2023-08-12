@@ -12,7 +12,7 @@ public class Enemy : MonoBehaviour
     [SerializeField] private Vector3 _offset;
     [SerializeField] private Vector3 _heatSeekOffset;
     [SerializeField] private Vector3 _smartEnemyLaserOffset;
-    [SerializeField] private float  _fireRate;
+    [SerializeField] private float _fireRate;
     [SerializeField] private GameObject _laserPrefab;
     [SerializeField] private GameObject _heatSeekLaserPrefab;
     [SerializeField] private GameObject _shield;
@@ -36,11 +36,14 @@ public class Enemy : MonoBehaviour
     private float _sineWave;
     private Vector3 _sineCurve;
     private bool _enemyIsType2 = false;
-    //Smart Enemy - Backwards Fire-CoolDown
+    //Smart Enemy - Backwards Fire-CoolDown--//
     private Vector3 localPosition;
     [SerializeField] private bool _isBehindPlayer;
-    
-   
+    //Enemy Attack Collectables ----//
+    [SerializeField] private Vector3 _locPosCollectable;
+    [SerializeField] private GameObject _powerup;
+    [SerializeField] private bool _canAttackPowerup;
+
 
 
     private void Start()
@@ -77,42 +80,40 @@ public class Enemy : MonoBehaviour
         _heatSeekOffset = new Vector3(0.0f, -2.0f, 0.0f);
         _smartEnemyLaserOffset = new Vector3(0f, 2.0f, 0f);
 
-
         //-------------Enemies by Waves---------------/////
         EnemyBalancedSpawning();
-        StartCoroutine(FireLaserRoutine());   
-    } 
+        //StartCoroutine(FireLaserRoutine());
+        StartCoroutine(DestroyCollectableCo());
+        //Enemy Attack collectables------//
+
+    }
 
     void Update()
     {
         _dist = Vector3.Distance(transform.position, _player.transform.position);
         localPosition = _player.transform.InverseTransformPoint(transform.position);
+        if (_powerup == null)
+        {
+            _powerup = GameObject.FindWithTag("Powerup");
+        }
+        else
+        {
+            _locPosCollectable = _powerup.transform.InverseTransformPoint(transform.position);
+        }
 
         _leftSideScreen = new Vector3(-10.5f, transform.position.y, transform.position.z);
         _rightSideScreen = new Vector3(10.5f, transform.position.y, transform.position.z);
 
-
+        AttackPowerup();
         EnemyMov(_enemyType);
+
     }
 
     void EnemyMov(int enemyId)
     {
-        if (_dist < 5.0f)
-        {
-            if (_enemyThruster != null)
-            {
-                _enemyThruster.SetActive(true);
-                transform.position = Vector3.MoveTowards(transform.position, _player.transform.position, _aggroSpeed * Time.deltaTime);
-            }
-            
-        } //Aggressive Ramming Enemy functionality
-        else
-        { 
-            if (_enemyThruster != null)
-            {
-                _enemyThruster.SetActive(false);
-            } 
-        }
+
+
+        RamPlayer(); 
 
         switch (enemyId)
         {
@@ -192,7 +193,7 @@ public class Enemy : MonoBehaviour
                     {
                         _isBehindPlayer = false;
                     }
-                    
+
                     transform.Translate(Vector3.down * _speed * Time.deltaTime);
 
 
@@ -205,8 +206,8 @@ public class Enemy : MonoBehaviour
 
                 }
             default:
-                { 
-                    break; 
+                {
+                    break;
                 }
         }
     }
@@ -224,6 +225,7 @@ public class Enemy : MonoBehaviour
 
             _speed = 0;
             _animator.SetTrigger("OnEnemyDeath");
+            _shield.SetActive(false);
             Destroy(_enemyThruster);
             _audioManager.PlayExplosionFx();
             Destroy(gameObject, 2.5f);
@@ -246,9 +248,11 @@ public class Enemy : MonoBehaviour
                 _speed = 0;
                 _animator.SetTrigger("OnEnemyDeath");
                 _audioManager.PlayExplosionFx();
+  
                 Destroy(_enemyThruster);
                 Destroy(GetComponent<Collider2D>());
                 Destroy(gameObject, 2.8f);
+
             }
         }
     }
@@ -259,23 +263,24 @@ public class Enemy : MonoBehaviour
         {
             _fireRate = 2/*Random.Range(2, 5)*/;
 
-            yield return new WaitForSeconds(_fireRate);
-
             if (_isBehindPlayer)
-            { 
+            {
                 GameObject laserGO = Instantiate(_laserPrefab, transform.position + _smartEnemyLaserOffset, Quaternion.identity);
                 laserGO.transform.parent = GameObject.Find("SmartEnemyLaser").transform;
             }
-            else if (isEnemyType2())
+
+            if (isEnemyType2())
             {
                 GameObject laserGO = Instantiate(_heatSeekLaserPrefab, transform.position + _heatSeekOffset, Quaternion.identity);
                 laserGO.transform.parent = GameObject.Find("EnemyLaser").transform;
             }
+
             else
-            { 
+            {
                 GameObject laserGO = Instantiate(_laserPrefab, transform.position + _offset, Quaternion.identity);
                 laserGO.transform.parent = GameObject.Find("EnemyLaser").transform;
-            }
+            }//Is a regular enemy
+            yield return new WaitForSeconds(_fireRate);
         }
     }
 
@@ -307,17 +312,69 @@ public class Enemy : MonoBehaviour
         }
         else if (_enemyType == 2)
         {
-            //_speed = 1.75f;
+            _speed = 1.75f;
             _enemyIsType2 = true;
         }
         else if (_enemyType == 3)
         {
             _shield.SetActive(true);
-            
+
         }
     }
 
+    private void RamPlayer()//Aggressive Ramming Enemy functionality
+    {
+        if (_dist < 5.0f)
+        {
+            if (_enemyThruster != null)
+            {
+                _enemyThruster.SetActive(true);
+                transform.position = Vector3.MoveTowards(transform.position, _player.transform.position, _aggroSpeed * Time.deltaTime);
+            }
+
+        } 
+        else
+        {
+            if (_enemyThruster != null)
+            {
+                _enemyThruster.SetActive(false);
+            }
+        }
+    }
+
+    private void AttackPowerup()
+    {
+        if (_locPosCollectable != null)
+        {
+            if ((_locPosCollectable.y > 0) && (_locPosCollectable.x <= .8) && (_locPosCollectable.x >= -.8))
+            {
+                _canAttackPowerup = true;
+                Debug.Log("destroy collectable");
+            }
+            else
+            {
+                _canAttackPowerup = false;
+            }
+        }
+    }
+
+    IEnumerator DestroyCollectableCo()
+    {
+        while (gameObject.activeInHierarchy)
+        {
+            if (_canAttackPowerup)
+            {
+                GameObject laserGO = Instantiate(_laserPrefab, transform.position + _offset, Quaternion.identity);
+                laserGO.transform.parent = GameObject.Find("EnemyLaser").transform;
+            }
+            yield return new WaitForSeconds(2f);
+        }
+    }
+
+    //if transform.inverseTransformPoint is neg. on the y and between -.4 and .4 on the x,
+    //then the object is infront of the enemy
+    //instantiate laser
+    //destroy object upon laser contact
+    //instantiate explosion prefab
+    //initiate explosion sound
 }
-
-
-
