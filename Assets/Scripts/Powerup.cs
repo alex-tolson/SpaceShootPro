@@ -27,7 +27,7 @@ public class Powerup : MonoBehaviour
 
     void Update()
     {
-        if (player._isCPressed() && gameObject.CompareTag("Powerup"))
+        if (player.IsCPressed() && gameObject.CompareTag("Powerup"))
         {
             transform.position = Vector3.MoveTowards(transform.position, player.transform.position, (1+_speed) * Time.deltaTime);
         }

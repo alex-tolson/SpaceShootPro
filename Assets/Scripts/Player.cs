@@ -48,6 +48,7 @@ public class Player : MonoBehaviour
     private ThrustersSlider _thrustersSlider;
     //-----Correction of Lasers from following the Enemy movement
     [SerializeField] private GameObject _playerLaserContainer;
+    //Player Presses C to Collect Powerups
     [SerializeField] private bool _collectPowerups;
 
     void Start()
@@ -121,6 +122,7 @@ public class Player : MonoBehaviour
             }
         }
         CalculateThrusters();
+
         if (Input.GetKeyDown(KeyCode.C))
         {
             _collectPowerups = true;
@@ -476,7 +478,7 @@ public class Player : MonoBehaviour
         }
     }
 
-    public bool _isCPressed()
+    public bool IsCPressed()
     {
         return _collectPowerups;
     }
