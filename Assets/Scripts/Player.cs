@@ -48,6 +48,7 @@ public class Player : MonoBehaviour
     private ThrustersSlider _thrustersSlider;
     //-----Correction of Lasers from following the Enemy movement
     [SerializeField] private GameObject _playerLaserContainer;
+    [SerializeField] private bool _collectPowerups;
 
     void Start()
     {
@@ -77,7 +78,6 @@ public class Player : MonoBehaviour
         {
             Debug.LogError("Player::ThrustersSlider is null");
         }
-        //beams is null;
         _thrustersSlider.SetThrusters(100);
         _thrustersSlider.UpdateThrustersUI();
     }
@@ -123,15 +123,13 @@ public class Player : MonoBehaviour
         CalculateThrusters();
         if (Input.GetKeyDown(KeyCode.C))
         {
-            CollectPowerups();
+            _collectPowerups = true;
+        }
+        else if (Input.GetKeyUp(KeyCode.C))
+        {
+            _collectPowerups = false;
         }
 
-
-
-            //If "C" key is pressed
-            //create a a raycast 
-            //give raycast a radius
-            //all powerups in that radius will transform.Translate to players transform.position
     }
 
     void CalculateThrusters()
@@ -393,12 +391,11 @@ public class Player : MonoBehaviour
                 if (_rightEngine.activeInHierarchy == true)
                 {
                     _rightEngine.SetActive(false);
-                    Debug.Log("turn off right engine");
+
                 }
                 else
                 {
                     _leftEngine.SetActive(false);
-                    Debug.Log("turn off left engine");
                 }
             }
             else if (x == 1)
@@ -479,11 +476,9 @@ public class Player : MonoBehaviour
         }
     }
 
-    public void CollectPowerups()
+    public bool _isCPressed()
     {
-        //LayerMask mask = LayerMask.GetMask("Powerup");
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, transform.TransformDirection(Vector2.down), 2.0f); //mask);
-        Debug.DrawRay(transform.position, transform.TransformDirection(Vector2.down) * 2.0f, Color.cyan);
+        return _collectPowerups;
     }
 }
 

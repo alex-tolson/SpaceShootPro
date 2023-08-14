@@ -111,8 +111,6 @@ public class Enemy : MonoBehaviour
 
     void EnemyMov(int enemyId)
     {
-
-
         RamPlayer(); 
 
         switch (enemyId)
@@ -349,7 +347,6 @@ public class Enemy : MonoBehaviour
             if ((_locPosCollectable.y > 0) && (_locPosCollectable.x <= .8) && (_locPosCollectable.x >= -.8))
             {
                 _canAttackPowerup = true;
-                Debug.Log("destroy collectable");
             }
             else
             {
@@ -370,11 +367,4 @@ public class Enemy : MonoBehaviour
             yield return new WaitForSeconds(2f);
         }
     }
-
-    //if transform.inverseTransformPoint is neg. on the y and between -.4 and .4 on the x,
-    //then the object is infront of the enemy
-    //instantiate laser
-    //destroy object upon laser contact
-    //instantiate explosion prefab
-    //initiate explosion sound
 }

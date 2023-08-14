@@ -27,11 +27,18 @@ public class Powerup : MonoBehaviour
 
     void Update()
     {
-        transform.Translate(Vector3.down * _speed * Time.deltaTime);
-
-        if (transform.position.y < -6f)
+        if (player._isCPressed() && gameObject.CompareTag("Powerup"))
         {
-            Destroy(this.gameObject);
+            transform.position = Vector3.MoveTowards(transform.position, player.transform.position, (1+_speed) * Time.deltaTime);
+        }
+        else
+        {
+            transform.Translate(Vector3.down * _speed * Time.deltaTime);
+
+            if (transform.position.y < -6f)
+            {
+                Destroy(this.gameObject);
+            }
         }
     }
 
