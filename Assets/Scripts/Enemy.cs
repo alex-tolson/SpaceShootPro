@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 public class Enemy : MonoBehaviour
 {
@@ -9,42 +10,66 @@ public class Enemy : MonoBehaviour
     private AudioManager _audioManager;
 
     private SpawnManager _spawnManager;
-    [SerializeField] private Vector3 _offset;
-    [SerializeField] private Vector3 _heatSeekOffset;
-    [SerializeField] private Vector3 _smartEnemyLaserOffset;
+    /*[SerializeField]*/private Vector3 _offset;
+    /*[SerializeField]*/private Vector3 _heatSeekOffset;
+    /*[SerializeField]*/private Vector3 _smartEnemyLaserOffset;
     [SerializeField] private float _fireRate;
     [SerializeField] private GameObject _laserPrefab;
     [SerializeField] private GameObject _heatSeekLaserPrefab;
     [SerializeField] private GameObject _shield;
+
     //Aggressive Enemies
     [SerializeField] private GameObject _enemyThruster;
     private float _dist;
     public float _aggroSpeed = 2.5f;
+
     //cam shake
     private CameraShake _camShake;
+
     //new enemy
     [SerializeField] private int _enemyType;
+
     //-----New enemy movement--------////
     private Vector3 _leftSideScreen;
     private Vector3 _rightSideScreen;
     private bool _goRight;
     private float _dist2SideScreen;
+
     //New Enemy Movement - enemy Type 2-----/////
-    [SerializeField] private float _waveSpeed = 4f;
+    /*[SerializeField]*/ private float _waveSpeed = 4f;
     private float _waveHeight = 2;
     private float _waveFrequency = 2;
     private float _sineWave;
     private Vector3 _sineCurve;
     private bool _enemyIsType2 = false;
+
     //Smart Enemy - Backwards Fire-CoolDown--//
     private Vector3 localPosition;
-    [SerializeField] private bool _isBehindPlayer;
+
+    /*[SerializeField]*/ private bool _isBehindPlayer;
+
     //Enemy Attack Collectables ----//
-    [SerializeField] private Vector3 _locPosCollectable;
-    [SerializeField] private GameObject _powerup;
-    [SerializeField] private bool _canAttackPowerup;
+    /*[SerializeField]*/private Vector3 _locPosCollectable;
+    /*[SerializeField]*/ private GameObject _powerup;
+    /*[SerializeField]*/ private bool _canAttackPowerup;
+    RaycastHit2D _hitPowerup;
+
+    //Enemy Avoid Shot
+    [SerializeField] private GameObject _laserInRange;
+    [SerializeField] private Vector3 _locPosOfPlayerLaser;
+    [SerializeField] private bool _mustEvadeShot;
+
+    //-------Ram Player------------//
+    [SerializeField] private bool _ramPlayer;
 
 
+    //Use Raycast
+    //if laser is detected, check for parent
+    //if parent is player's laser container (the laser belongs to player)
+    //then take position of laser and make it relative to enemy to find out which side the laser is on
+    //turn the opposite way
+    //after short time
+    //turn back to original position
 
     private void Start()
     {
@@ -82,42 +107,50 @@ public class Enemy : MonoBehaviour
 
         //-------------Enemies by Waves---------------/////
         EnemyBalancedSpawning();
-        //StartCoroutine(FireLaserRoutine());
-        StartCoroutine(DestroyCollectableCo());
-        //Enemy Attack collectables------//
+        StartCoroutine(FireLaserRoutine());
 
+        //Enemy Attack collectables------//
+        StartCoroutine(DestroyCollectableCo());
     }
 
     void Update()
     {
+        DetectLaser();
         _dist = Vector3.Distance(transform.position, _player.transform.position);
+
         localPosition = _player.transform.InverseTransformPoint(transform.position);
-        if (_powerup == null)
+
+        if (_laserInRange != null)
         {
-            _powerup = GameObject.FindWithTag("Powerup");
-        }
-        else
-        {
-            _locPosCollectable = _powerup.transform.InverseTransformPoint(transform.position);
+            _locPosOfPlayerLaser = transform.InverseTransformPoint(_laserInRange.transform.position);
         }
 
         _leftSideScreen = new Vector3(-10.5f, transform.position.y, transform.position.z);
         _rightSideScreen = new Vector3(10.5f, transform.position.y, transform.position.z);
 
+        if (_dist < 5.0f && _mustEvadeShot != true)
+        {
+            _ramPlayer = true;
+        }
+        else
+        {
+            _ramPlayer = false;
+        }
+
+        FindPowerup();
         AttackPowerup();
         EnemyMov(_enemyType);
-
     }
 
     void EnemyMov(int enemyId)
     {
-        RamPlayer(); 
+        RamPlayer();
 
         switch (enemyId)
         {
             case 0: //Straight down enemies
                 {
-                    transform.Translate(Vector3.down * _speed * Time.deltaTime);
+                    transform.Translate(_speed * Time.deltaTime * Vector3.down);
 
                     if (transform.position.y < -6f)
                     {
@@ -203,13 +236,23 @@ public class Enemy : MonoBehaviour
                     break;
 
                 }
+            case 5: //Detect and avoid Player's lasers
+                {
+                    transform.Translate(Vector3.down * _speed * Time.deltaTime);
+                    StartCoroutine(EvadeShotCO());
+                    if (transform.position.y < -6f)
+                    {
+                        float randomX = Random.Range(-10f, 10f);
+                        transform.position = new Vector3(randomX, 8f, transform.position.z);
+                    }
+                    break;
+                }
             default:
                 {
                     break;
                 }
         }
     }
-
 
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -246,7 +289,7 @@ public class Enemy : MonoBehaviour
                 _speed = 0;
                 _animator.SetTrigger("OnEnemyDeath");
                 _audioManager.PlayExplosionFx();
-  
+
                 Destroy(_enemyThruster);
                 Destroy(GetComponent<Collider2D>());
                 Destroy(gameObject, 2.8f);
@@ -267,7 +310,7 @@ public class Enemy : MonoBehaviour
                 laserGO.transform.parent = GameObject.Find("SmartEnemyLaser").transform;
             }
 
-            if (isEnemyType2())
+            if (IsEnemyType2())
             {
                 GameObject laserGO = Instantiate(_heatSeekLaserPrefab, transform.position + _heatSeekOffset, Quaternion.identity);
                 laserGO.transform.parent = GameObject.Find("EnemyLaser").transform;
@@ -282,7 +325,7 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    public bool isEnemyType2()
+    public bool IsEnemyType2()
     {
         return _enemyIsType2;
     }
@@ -301,7 +344,7 @@ public class Enemy : MonoBehaviour
         }
         else if (_spawnManager.whatWaveCountIsIt() >= 7)
         {
-            _enemyType = Random.Range(3, 8);
+            _enemyType = Random.Range(3, 6);
         }
         //----------------------------------------------------------------------------------------------
         if (_enemyType == 1)
@@ -322,15 +365,14 @@ public class Enemy : MonoBehaviour
 
     private void RamPlayer()//Aggressive Ramming Enemy functionality
     {
-        if (_dist < 5.0f)
+        if (_ramPlayer == true)
         {
             if (_enemyThruster != null)
             {
                 _enemyThruster.SetActive(true);
                 transform.position = Vector3.MoveTowards(transform.position, _player.transform.position, _aggroSpeed * Time.deltaTime);
             }
-
-        } 
+        }
         else
         {
             if (_enemyThruster != null)
@@ -364,7 +406,82 @@ public class Enemy : MonoBehaviour
                 GameObject laserGO = Instantiate(_laserPrefab, transform.position + _offset, Quaternion.identity);
                 laserGO.transform.parent = GameObject.Find("EnemyLaser").transform;
             }
-            yield return new WaitForSeconds(2f);
+            yield return new WaitForSeconds(1.5f);
         }
     }
+
+    private void FindPowerup()
+    {
+        if (_powerup == null)
+        {
+            _hitPowerup = Physics2D.CircleCast(transform.position, 2.0f, transform.up);
+            Debug.DrawRay(transform.position, transform.up, Color.green);
+
+            if (_hitPowerup.collider != null)
+            {
+                if (_hitPowerup.collider.gameObject.CompareTag("Powerup"))
+                {
+                    _powerup = _hitPowerup.collider.gameObject;
+                }
+            }
+        }
+        else
+        {
+            _locPosCollectable = _powerup.transform.InverseTransformPoint(transform.position);
+        }
+    }
+
+    IEnumerator EvadeShotCO()//Evasive Maneuvers
+    {
+        if (_mustEvadeShot == true)
+        {
+            float smooth = 15.0f;
+            float rotRoundZ = 90.0f;
+
+            if (_locPosOfPlayerLaser.x < 0)
+            {
+                Quaternion target = Quaternion.Euler(0, 0, rotRoundZ);
+                transform.rotation = Quaternion.Slerp(transform.rotation, target, Time.deltaTime * smooth);
+
+                yield return new WaitForSeconds(.85f);
+
+                target = Quaternion.Euler(0, 0, 0);
+                transform.rotation = Quaternion.Slerp(transform.rotation, target, Time.deltaTime * smooth);
+            }
+            else
+            {
+                Quaternion target = Quaternion.Euler(0, 0, -rotRoundZ);
+                transform.rotation = Quaternion.Slerp(transform.rotation, target, Time.deltaTime * smooth);
+
+                yield return new WaitForSeconds(.85f);
+
+                target = Quaternion.Euler(0, 0, 0);
+                transform.rotation = Quaternion.Slerp(transform.rotation, target, Time.deltaTime * smooth);
+
+            }
+        }
+        if (_locPosOfPlayerLaser.y > 7)
+        {
+            _mustEvadeShot = false;
+            _laserInRange = null;
+        }
+        yield return new WaitForSeconds(.15f);
+    }
+
+    private void DetectLaser()
+    {
+        RaycastHit2D _hitLaser = Physics2D.CircleCast(transform.position, 2f, transform.up);
+
+        if (_hitLaser.collider != null && _hitLaser.collider.CompareTag("Laser"))
+        {
+            if ((_hitLaser.collider.gameObject.transform.parent.name == "PlayerLaserContainer"))
+            {
+                _laserInRange = _hitLaser.collider.gameObject;
+                _mustEvadeShot = true;
+                _ramPlayer = false;
+            }
+        }
+
+    }
 }
+

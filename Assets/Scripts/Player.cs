@@ -161,7 +161,8 @@ public class Player : MonoBehaviour
 
         if (_isTripleShotActive)
         {
-            Instantiate(_tripleShotPrefab, transform.position + _offsetTripleShot, Quaternion.identity);
+           GameObject laserGo = Instantiate(_tripleShotPrefab, transform.position + _offsetTripleShot, Quaternion.identity);
+            laserGo.transform.parent = GameObject.Find("PlayerLaserContainer").transform;
         }
         else
         {
