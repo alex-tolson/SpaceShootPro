@@ -107,10 +107,10 @@ public class Enemy : MonoBehaviour
 
         //-------------Enemies by Waves---------------/////
         EnemyBalancedSpawning();
-        StartCoroutine(FireLaserRoutine());
+        //StartCoroutine(FireLaserRoutine());
 
         //Enemy Attack collectables------//
-        StartCoroutine(DestroyCollectableCo());
+        //StartCoroutine(DestroyCollectableCo());
     }
 
     void Update()
@@ -137,14 +137,14 @@ public class Enemy : MonoBehaviour
             _ramPlayer = false;
         }
 
-        FindPowerup();
-        AttackPowerup();
+        //FindPowerup();
+        //AttackPowerup();
         EnemyMov(_enemyType);
     }
 
     void EnemyMov(int enemyId)
     {
-        RamPlayer();
+        //RamPlayer();
 
         switch (enemyId)
         {
@@ -272,7 +272,7 @@ public class Enemy : MonoBehaviour
             Destroy(gameObject, 2.5f);
         }
 
-        else if (other.CompareTag("Laser"))
+        else if (other.CompareTag("Laser") || other.CompareTag("Homing"))
         {
             if (_shield.activeInHierarchy == true)
             {
@@ -415,7 +415,6 @@ public class Enemy : MonoBehaviour
         if (_powerup == null)
         {
             _hitPowerup = Physics2D.CircleCast(transform.position, 2.0f, transform.up);
-            Debug.DrawRay(transform.position, transform.up, Color.green);
 
             if (_hitPowerup.collider != null)
             {

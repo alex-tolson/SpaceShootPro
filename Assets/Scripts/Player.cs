@@ -16,9 +16,9 @@ public class Player : MonoBehaviour
     [SerializeField] private GameObject _shieldVisual;
     [SerializeField] private GameObject _leftEngine;
     [SerializeField] private GameObject _rightEngine;
-    [SerializeField] private Vector3 _offset;
-    [SerializeField] private Vector3 _offsetTripleShot;
-    [SerializeField] private Vector3 _offsetBeams;
+    Vector3 _offset;
+    private Vector3 _offsetTripleShot;
+    private Vector3 _offsetBeams;
     [SerializeField] private int _lives = 3;
     [SerializeField] private float _fireRate = .15f;
     private float _canFire = -1f;
@@ -32,6 +32,8 @@ public class Player : MonoBehaviour
     private bool _collectedBeamsPowerup;
     private bool _beamsActivated;
     private bool _isAmmoJamActive = false;
+    
+
     //-----
     [SerializeField] private int _score;
     private AudioManager _audioManager;
@@ -49,7 +51,11 @@ public class Player : MonoBehaviour
     //-----Correction of Lasers from following the Enemy movement
     [SerializeField] private GameObject _playerLaserContainer;
     //Player Presses C to Collect Powerups
-    [SerializeField] private bool _collectPowerups;
+    private bool _collectPowerups;
+    //Homing Missile
+    private bool _isHomingActive;
+    [SerializeField] private GameObject _homingPrefab;
+
 
     void Start()
     {
@@ -87,40 +93,44 @@ public class Player : MonoBehaviour
     {
         CalculateMovement();
 
-        if (Input.GetKeyDown(KeyCode.Space) && (_isAmmoJamActive == true))
+        if (Input.GetKeyDown(KeyCode.Space) && _isHomingActive == true) //Homing Missile
         {
-                _audioManager.PlayEmptyChamberFx();
-                Debug.Log("Ammo Jam");
+            FireHoming();
         }
-        else
-        {
-            if (Input.GetKeyDown(KeyCode.Space) && (_collectedBeamsPowerup)) //Rare Beams Powerup
-            {
-                if (_beamsActivated)
-                {
-                    return;
-                }
-                else if (!_beamsActivated)
-                {
-                    _beamsActivated = true;
-                    beamsGO = Instantiate(_beamsPrefab, transform.position, Quaternion.identity);
-                    beamsGO.transform.parent = this.transform;
-                }
-            }
 
-            else if (Input.GetKeyDown(KeyCode.Space) && Time.time > _canFire) //Fire Laser
+        else if (Input.GetKeyDown(KeyCode.Space) && (_collectedBeamsPowerup)) //Rare Beams Powerup
+        {
+            if (_beamsActivated)
             {
-                if (_ammoCount <= 0)
-                {
-                    _ammoCount = 0;
-                    _audioManager.PlayEmptyChamberFx();
-                }
-                else
-                {
-                    FireLaser();
-                }
+                return;
+            }
+            else if (!_beamsActivated)
+            {
+                _beamsActivated = true;
+                beamsGO = Instantiate(_beamsPrefab, transform.position, Quaternion.identity);
+                beamsGO.transform.parent = this.transform;
             }
         }
+        else if (Input.GetKeyDown(KeyCode.Space) && (_isAmmoJamActive == true))
+        {
+            _audioManager.PlayEmptyChamberFx();
+            Debug.Log("Ammo Jam");
+        }
+
+        else if (Input.GetKeyDown(KeyCode.Space) && Time.time > _canFire) //Fire Laser
+        {
+            if (_ammoCount <= 0)
+            {
+                _ammoCount = 0;
+                _audioManager.PlayEmptyChamberFx();
+            }
+            else
+            {
+                FireLaser();
+            }
+        }
+
+
         CalculateThrusters();
 
         if (Input.GetKeyDown(KeyCode.C))
@@ -455,6 +465,18 @@ public class Player : MonoBehaviour
         Destroy(beamsGO);
     }
 
+    public void HomingPowerup()
+    {
+        _isHomingActive = true;
+        StartCoroutine(HomingPowerDownRoutine());
+    }
+
+    IEnumerator HomingPowerDownRoutine()
+    {
+        yield return new WaitForSeconds(8.0f);
+        _isHomingActive = false;
+    }
+
     public void AmmoJamPickup()
     {
         _isAmmoJamActive = true;
@@ -483,5 +505,26 @@ public class Player : MonoBehaviour
     {
         return _collectPowerups;
     }
+
+    private void FireHoming()
+    {
+        if (_isHomingActive == true)
+        {
+            GameObject go = Instantiate(_homingPrefab, this.transform.position + _offset, Quaternion.identity);
+        }
+    }
+
+
+    //powerup is collected
+    //Powerup up script calls homing Powerup method.
+    //Homing Powerup method turns _isHomingActive to true
+    //homing poweurp method starts homingPowerdownRoutine
+    //homingPowerDownRoutine waits 8 seconds and returns _isHomingActive to false
+    //create new method to dictate rocket behavior
+    //rocket will cast a circle from point of origin that is the player
+    //rocket will put results inside an array
+    //results will be sorted by distance from player
+    //loop through results/enemies detected within the circle raycast
+    //homing missile is sent out to nearest target of result with the least amount of distance
 }
 

@@ -76,7 +76,7 @@ public class SpawnManager : MonoBehaviour
             float randomX = Random.Range(-10f, 10f);
             location = new Vector3(randomX, 10.0f, 0f);
 
-            if (_percentiles <= 55)  //low tier is 1, 3, and 5
+            if (_percentiles <= 55)  
             {
                 _randomPowerup = Random.Range(0, 6);
                 if ((_randomPowerup == 0) || (_randomPowerup == 2) || (_randomPowerup == 4))
@@ -85,8 +85,8 @@ public class SpawnManager : MonoBehaviour
                 }
 
                 Instantiate(powerups[_randomPowerup], location, Quaternion.identity);
-            }
-            else if ((_percentiles > 56) && (_percentiles < 86)) // middle tier is 0 and 2
+            }//low tier is 1, 3, and 5
+            else if ((_percentiles > 56) && (_percentiles < 86)) 
             {
                 _randomPowerup = Random.Range(0, 2);
 
@@ -96,12 +96,12 @@ public class SpawnManager : MonoBehaviour
                 }
 
                 Instantiate(powerups[_randomPowerup], location, Quaternion.identity);
-            }
-            else if ((_percentiles < 85)) // middle tier is 4 and 6
+            }// middle tier is 0 and 2
+            else if ((_percentiles < 85)) // High tier is 4, 6, and 7
             {
                 if (_player.HasTakenDamage())
                 {
-                    _randomPowerup = Random.Range(4, 6);
+                    _randomPowerup = Random.Range(4, 7);
 
                     if (_randomPowerup > 4)
                     {
@@ -110,7 +110,7 @@ public class SpawnManager : MonoBehaviour
                 }
                 else
                 {
-                    _randomPowerup = 6;
+                    _randomPowerup = Random.Range(6, 8);
                 }
 
                 Instantiate(powerups[_randomPowerup], location, Quaternion.identity);

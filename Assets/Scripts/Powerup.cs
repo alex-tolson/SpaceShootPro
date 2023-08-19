@@ -89,6 +89,11 @@ public class Powerup : MonoBehaviour
                         player.BeamsPowerup();
                         break;
                     }
+                case 7:
+                    {
+                        player.HomingPowerup();
+                        break;
+                    }
 
                 default:
                     {
