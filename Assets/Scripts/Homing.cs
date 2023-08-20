@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Security.Cryptography;
 using UnityEngine;
 
 public class Homing : MonoBehaviour
@@ -11,9 +10,16 @@ public class Homing : MonoBehaviour
     [SerializeField] private float _homingSpeed = 2;
     RaycastHit2D[] collisions;
     private Vector3 _direction;
+    [SerializeField] private GameObject _explosionPrefab;
+    private AudioManager _audio;
 
     private void Start()
     {
+        _audio = GameObject.Find("AudioManager").GetComponent<AudioManager>();
+        if(_audio == null)
+        {
+            Debug.LogError("Homing::AudioManager is null");
+        }
         DestroyRocket();
     }
 
@@ -59,11 +65,20 @@ public class Homing : MonoBehaviour
         if (other.CompareTag("Enemy"))
         {
             Destroy(gameObject);
-        }    
+        }
+
+        if (other.transform.parent.name == "PlayerLaserContainer")
+        {
+            Destroy(gameObject);
+            Instantiate(_explosionPrefab, transform.position, Quaternion.identity);
+            _audio.PlayExplosionFx();
+        }
     }
 
     private void DestroyRocket()
     {
         Destroy(gameObject, 7.0f);
+        Instantiate(_explosionPrefab, transform.position, Quaternion.identity);
+        _audio.PlayExplosionFx();
     }
 }
