@@ -91,7 +91,7 @@ public class Laser : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            _player.Damage();
+            //_player.Damage();
             _camShake.StartCamShake();
         }
 

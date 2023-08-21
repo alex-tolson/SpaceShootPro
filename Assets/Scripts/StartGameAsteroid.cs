@@ -1,30 +1,29 @@
 using UnityEngine;
 
-public class Asteroid : MonoBehaviour
+
+public class StartGameAsteroid : MonoBehaviour
 {
     [SerializeField] private float _speed = 3f;
     [SerializeField] private GameObject _asteroid;
+    [SerializeField] private Vector3 _rot;
     [SerializeField] private GameObject _explosionPrefab;
 
     private SpawnManager _spawnManager;
     private AudioManager _audioManager;
     private UIManager _uiManager;
     private Player _player;
-    private AsteroidsSpawn _asteroidsSpawnScript;
-    private Vector3 _rot;
+
 
     void Start()
     {
-        _asteroidsSpawnScript = GameObject.Find("Boss_Ship").GetComponent<AsteroidsSpawn>();
-        if(_asteroidsSpawnScript == null)
-        {
-            Debug.LogError("Asteroid::AsteroidsSpawn Script is null");
-        }
         _spawnManager = GameObject.Find("SpawnManager").GetComponent<SpawnManager>();
         if (_spawnManager == null)
         {
             Debug.LogError("Asteroid::SpawnManager is null");
         }
+        //
+        _rot = new Vector3(0f, 0f, 90f);
+        //
         _audioManager = GameObject.Find("AudioManager").GetComponent<AudioManager>();
         if (_audioManager == null)
         {
@@ -38,35 +37,31 @@ public class Asteroid : MonoBehaviour
         }
         //
         _player = GameObject.Find("Player").GetComponent<Player>();
-        if(_player == null)
+        if (_player == null)
         {
             Debug.LogError("Asteroid::Player is null");
         }
-        _rot = new Vector3(0f, 0f, 90f);
     }
 
     void Update()
     {
-        AsteroidFall();
-        //transform.Rotate(_rot * 3f * Time.deltaTime);
+        transform.Rotate(_rot * _speed * Time.deltaTime);
     }
 
     public void OnTriggerEnter2D(Collider2D other)
     {
-       
+
         if (other.CompareTag("Laser"))
         {
             GameObject go = Instantiate(_explosionPrefab, transform.position, Quaternion.identity);
             _audioManager.PlayExplosionFx();
+            _player.ResetAmmoCount();
             Destroy(go, 3f);
+            _spawnManager.BeginWave(1, 10f);
+            Destroy(GetComponent<Collider2D>());
             //Destroy(_asteroid, .3f);
-            Destroy(gameObject);
+            gameObject.SetActive(false);
         }
     }
 
-    public void AsteroidFall()
-    {
-        transform.Translate(Vector3.down * 4 * Time.deltaTime);
-        //transform.Rotate(_rot * 3f * Time.deltaTime);
-    }
 }
