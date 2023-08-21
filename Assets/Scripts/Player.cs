@@ -261,6 +261,7 @@ public class Player : MonoBehaviour
         }
 
         _lives -= 1;
+        _audioManager.PlayExplosionFx();
 
         if (_lives == 2)
         {

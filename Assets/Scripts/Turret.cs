@@ -35,7 +35,7 @@ public class Turret : MonoBehaviour
 
     IEnumerator ShootRockets()
     {
-        int x = Random.Range(4, 9);
+        int x = Random.Range(9, 15);
 
         while (gameObject.activeInHierarchy)
         {

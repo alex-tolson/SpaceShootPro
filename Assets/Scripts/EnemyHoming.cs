@@ -9,6 +9,7 @@ public class EnemyHoming : MonoBehaviour
     private Vector3 _direction;
     [SerializeField] private GameObject _explosionPrefab;
     private AudioManager _audio;
+    private CameraShake _camShake;
 
     private void Start()
     {
@@ -22,6 +23,12 @@ public class EnemyHoming : MonoBehaviour
         {
             Debug.LogError("EnemyHoming::AudioManager is null");
         }
+        _camShake = GameObject.Find("Main Camera").GetComponent<CameraShake>();
+        if (_camShake == null)//-----------NullChecking Camera Shake------------
+        {
+            Debug.LogError("EnemyHoming::CameraShake is null");
+        }
+
         //DestroyRocket();
     }
 
@@ -44,12 +51,19 @@ public class EnemyHoming : MonoBehaviour
     }
 
     private void OnTriggerEnter2D(Collider2D other)
-    { 
-        if (other.transform.parent.name == "PlayerLaserContainer")
+    {
+        Debug.Log(other);
+        if (other.CompareTag("Laser"))
         {
             Destroy(gameObject);
             Instantiate(_explosionPrefab, transform.position, Quaternion.identity);
             _audio.PlayExplosionFx();
+        }
+        if (other.CompareTag("Player"))
+        {
+            //_player.Damage();
+            _camShake.StartCamShake();
+            Destroy(gameObject);
         }
     }
 

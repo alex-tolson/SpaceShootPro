@@ -424,7 +424,7 @@ MonoBehaviour:
   _shieldVisual: {fileID: 516427161}
   _leftEngine: {fileID: 863155662}
   _rightEngine: {fileID: 76857130}
-  _lives: 100
+  _lives: 3
   _fireRate: 0.15
   _tripleShotPrefab: {fileID: 2122170778678322266, guid: 48e20402f32cd53409622dd5e85ce927, type: 3}
   _score: 0
@@ -643,7 +643,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &134390644
 Transform:
   m_ObjectHideFlags: 0
@@ -2497,7 +2497,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1168948704
 Transform:
   m_ObjectHideFlags: 0
@@ -3399,8 +3399,9 @@ GameObject:
   - component: {fileID: 1731140789}
   - component: {fileID: 1731140788}
   - component: {fileID: 1731140787}
+  - component: {fileID: 1731140790}
   m_Layer: 0
-  m_Name: Boss Ship
+  m_Name: Boss_Ship
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3494,6 +3495,22 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 13
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1731140790
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1731140786}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cfe6d708e33b11d41be4e9123ee5f244, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _asteroid: {fileID: 8785227851881634889, guid: 4391563d7ee9b1e4dada3d87f58af42d, type: 3}
+  _shakeTime: 0
+  _newPosition: {x: 0, y: 0, z: 0}
+  _newSize: 0
 --- !u!1 &1750056474
 GameObject:
   m_ObjectHideFlags: 0
@@ -4233,7 +4250,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2132843895
 Transform:
   m_ObjectHideFlags: 0
@@ -4379,6 +4396,10 @@ PrefabInstance:
     - target: {fileID: 8785227851881634893, guid: 4391563d7ee9b1e4dada3d87f58af42d, type: 3}
       propertyPath: m_RootOrder
       value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 8785227851881634893, guid: 4391563d7ee9b1e4dada3d87f58af42d, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8785227851881634893, guid: 4391563d7ee9b1e4dada3d87f58af42d, type: 3}
       propertyPath: m_LocalPosition.x
