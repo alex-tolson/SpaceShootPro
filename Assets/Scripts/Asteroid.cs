@@ -11,11 +11,16 @@ public class Asteroid : MonoBehaviour
     private AudioManager _audioManager;
     private UIManager _uiManager;
     private Player _player;
-    
+    private AsteroidsSpawn _asteroidsSpawnScript;
 
 
     void Start()
     {
+        _asteroidsSpawnScript = GameObject.Find("Boss_Ship").GetComponent<AsteroidsSpawn>();
+        if(_asteroidsSpawnScript == null)
+        {
+            Debug.LogError("Asteroid::AsteroidsSpawn Script is null");
+        }
         _spawnManager = GameObject.Find("SpawnManager").GetComponent<SpawnManager>();
         if (_spawnManager == null)
         {
@@ -45,7 +50,8 @@ public class Asteroid : MonoBehaviour
 
     void Update()
     {   
-        transform.Rotate(_rot * _speed * Time.deltaTime); 
+        transform.Rotate(_rot * _speed * Time.deltaTime);
+
     }
 
     public void OnTriggerEnter2D(Collider2D other)
@@ -61,5 +67,10 @@ public class Asteroid : MonoBehaviour
             //Destroy(_asteroid, .3f);
             _asteroid.SetActive(false); //make a coroutine to wait 3 seconds and then go inactive
         }
+    }
+
+    public void AsteroidFall()
+    {
+        transform.Translate(Vector3.down * 6 * Time.deltaTime);
     }
 }

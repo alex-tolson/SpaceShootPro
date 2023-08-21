@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 5771870313878450179}
   - component: {fileID: 5771870313878450182}
   - component: {fileID: 5771870313878450177}
-  - component: {fileID: -4867463602530416725}
+  - component: {fileID: 8230347044372883282}
   m_Layer: 0
   m_Name: HomingPrefab
   m_TagString: Homing
@@ -122,7 +122,7 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
---- !u!114 &-4867463602530416725
+--- !u!114 &8230347044372883282
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -131,9 +131,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 5771870313878450178}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe7a7bd7ba1ad5b45b8bf596a382e5af, type: 3}
+  m_Script: {fileID: 11500000, guid: a3fe3fc710a3ad74d9bbe031398d0540, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _closestTarget: {fileID: 0}
   _homingSpeed: 2
   _explosionPrefab: {fileID: 113165077134919788, guid: 532a75d770dbeef4da84ce2274607f56, type: 3}

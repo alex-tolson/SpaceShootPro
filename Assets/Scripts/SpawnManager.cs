@@ -126,9 +126,17 @@ public class SpawnManager : MonoBehaviour
 
     public void BeginWave(int Count, float Time)
     {
+
         _waveCount += Count;
         _waveTime += Time;
         _uiManager.DisplayWaveInfo(_waveCount, _waveTime);
+        //if wavecount = final wave:wave8
+        //display new information like 
+        //FINAL WAVE || NO TIME LIMIT
+        //Introduce boss. turn off collider2d
+        //till animation finishes playing
+
+
     }
 
     public void EndWave()
