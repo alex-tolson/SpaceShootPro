@@ -332,17 +332,17 @@ public class Enemy : MonoBehaviour
 
     private void EnemyBalancedSpawning()
     {
-        if (_spawnManager.whatWaveCountIsIt() <= 3)
+        if (_spawnManager.whatWaveCountIsIt() <= 2)
         {
             _enemyType = Random.Range(0, 3);
 
         }
-        else if (_spawnManager.whatWaveCountIsIt() >= 4 && _spawnManager.whatWaveCountIsIt() <= 6)
+        else if (_spawnManager.whatWaveCountIsIt() >= 3 && _spawnManager.whatWaveCountIsIt() <= 5)
         {
             _enemyType = Random.Range(1, 4);
 
         }
-        else if (_spawnManager.whatWaveCountIsIt() >= 7)
+        else if (_spawnManager.whatWaveCountIsIt() <= 7)
         {
             _enemyType = Random.Range(3, 6);
         }

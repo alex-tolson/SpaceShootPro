@@ -23,6 +23,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TMP_Text _ammoCountText;
     [SerializeField] private TMP_Text _waveCountText;
     [SerializeField] private TMP_Text _waveTimeText;
+    [SerializeField] private TMP_Text _finalWaveText;
 
     // Start is called before the first frame update
     void Start()
@@ -98,5 +99,16 @@ public class UIManager : MonoBehaviour
     public void DisplayWaveInfo(int c, float t)
     {
         StartCoroutine(DisplayWaveInfoCorou(c, t));
+    }
+    public void FinalWaveUI()
+    {
+        StartCoroutine(DisplayFinalWaveInfoCorou());
+    }
+
+    IEnumerator DisplayFinalWaveInfoCorou()
+    {       
+        _finalWaveText.gameObject.SetActive(true);
+        yield return new WaitForSeconds(3.0f);
+        _finalWaveText.gameObject.SetActive(false);
     }
 }

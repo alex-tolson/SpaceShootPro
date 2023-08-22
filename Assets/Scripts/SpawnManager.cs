@@ -6,7 +6,7 @@ public class SpawnManager : MonoBehaviour
 {
     [SerializeField] private GameObject enemyPrefab;
     [SerializeField] private GameObject _enemyContainer;
-
+    [SerializeField] private GameObject _bigBoss;
     private static List<GameObject> _enemies = new List<GameObject>();
    
     [SerializeField] private GameObject[] powerups;
@@ -126,17 +126,17 @@ public class SpawnManager : MonoBehaviour
 
     public void BeginWave(int Count, float Time)
     {
-
         _waveCount += Count;
         _waveTime += Time;
-        _uiManager.DisplayWaveInfo(_waveCount, _waveTime);
-        //if wavecount = final wave:wave8
-        //display new information like 
-        //FINAL WAVE || NO TIME LIMIT
-        //Introduce boss. turn off collider2d
-        //till animation finishes playing
-
-
+        if (_waveCount < 7)
+        {
+            _uiManager.DisplayWaveInfo(_waveCount, _waveTime);
+        }
+        else
+        {
+            _uiManager.FinalWaveUI();
+            BeginFinalWave();
+        }
     }
 
     public void EndWave()
@@ -169,6 +169,21 @@ public class SpawnManager : MonoBehaviour
     public int whatWaveCountIsIt()
     {
         return _waveCount;
+    }
+
+    private void BeginFinalWave()
+    {
+        _bigBoss.SetActive(true);
+        StartCoroutine(InvincibleFrames());
+        StartCoroutine("SpawnPowerupRoutine");
+    }
+    IEnumerator InvincibleFrames()
+    {
+        _bigBoss.GetComponent<Collider2D>().gameObject.SetActive(false);
+        yield return new WaitForSeconds(4.5f);
+        _bigBoss.GetComponent<Collider2D>().gameObject.SetActive(true);
+        //Introduce boss. turn off collider2d
+        //till animation finishes playing
     }
 }
 

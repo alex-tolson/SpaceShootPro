@@ -32,13 +32,11 @@ public class EnemyHoming : MonoBehaviour
 
     private void Update()
     {
-
         if (_player != null)
         {
             LookAtTarget();
             transform.position = Vector3.MoveTowards(transform.position, _player.transform.position, _homingSpeed * Time.deltaTime);
         }
-
     }
 
     private void LookAtTarget()
@@ -50,7 +48,7 @@ public class EnemyHoming : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        Debug.Log(other);
+        //Debug.Log(other);
         if (other.CompareTag("Laser"))
         {
             Destroy(gameObject);

@@ -15,7 +15,7 @@ public class Asteroid : MonoBehaviour
 
     void Start()
     {
-        _asteroidsSpawnScript = GameObject.Find("Boss_Ship").GetComponent<AsteroidsSpawn>();
+        _asteroidsSpawnScript = GameObject.Find("Big_Boss").GetComponent<AsteroidsSpawn>();
         if(_asteroidsSpawnScript == null)
         {
             Debug.LogError("Asteroid::AsteroidsSpawn Script is null");

@@ -5,6 +5,7 @@ using UnityEngine;
 public class AsteroidsSpawn : MonoBehaviour
 {
     [SerializeField] private GameObject _asteroid;
+    private CameraShake _camShake;
     private Animator _anim;
     private SpawnManager _spawnManager;
     [SerializeField] private float _shakeTime;
@@ -16,6 +17,11 @@ public class AsteroidsSpawn : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        _camShake = GameObject.Find("Main Camera").GetComponent<CameraShake>();
+        if(_camShake == null)
+        {
+            Debug.LogError("AsteroidSpawn::CameraShake is null");
+        }
         _anim = GetComponent<Animator>();
         if (_anim == null)
         {
@@ -66,7 +72,7 @@ public class AsteroidsSpawn : MonoBehaviour
     {
         _asteroidAttack = true;
         StartCoroutine(ShakeSpaceCoroutine());
-        
+        _camShake.StartAsteroidFall();
     }
 }
 
