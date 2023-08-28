@@ -3,14 +3,14 @@ using UnityEngine;
 public class Laser : MonoBehaviour
 {
     [SerializeField] private float _speed = 8.0f;
-    [SerializeField] private CameraShake _camShake;
+    private CameraShake _camShake;
     private Player _player;
     private float _dist;
 
     private void Start()
     {
         _player = GameObject.Find("Player").GetComponent<Player>();
-        if (_player == null )
+        if (_player == null)
         {
             Debug.LogError("Laser::Player is null");
         }
@@ -22,7 +22,7 @@ public class Laser : MonoBehaviour
     }
     void Update()
     {
-        _dist = Vector3.Distance(gameObject.transform.position, _player.transform.position);
+        if (_player != null) { _dist = Vector3.Distance(gameObject.transform.position, _player.transform.position); }
 
         switch (transform.parent.name)
         {
@@ -54,7 +54,7 @@ public class Laser : MonoBehaviour
                     if (transform.position.y > 8)
                     {
                         Destroy(transform.parent.gameObject);
-       }
+                    }
                     break;
                 }
             case "EnemyLaser":
@@ -78,10 +78,30 @@ public class Laser : MonoBehaviour
 
                     break;
                 }
+            case "BigBossLaserContainer":
+                {
+                    if (gameObject.name == "HeatSeekLaser(Clone)")
+                    {
+                        _speed = 4f;
+
+                        if (_dist < 2.0f)
+                        {
+                            transform.position = Vector3.MoveTowards(transform.position, _player.transform.position, _speed * Time.deltaTime);
+                        }
+                    }
+
+                    transform.Translate(Vector3.down * _speed * Time.deltaTime);
+
+                    if (transform.position.y < -8)
+                    {
+                        Destroy(gameObject);
+                    }
+
+                    break;
+                }
 
             default:
                 {
-                    //Debug.Log("Hi Beams");
                     break;
                 }
         }
@@ -91,10 +111,14 @@ public class Laser : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            //_player.Damage();
+            _player.Damage();
             _camShake.StartCamShake();
-        }
 
+            if (gameObject.name == "HeatSeekLaser(Clone)")
+            {
+                Destroy(gameObject);
+            }
+        }
     }
 }
 

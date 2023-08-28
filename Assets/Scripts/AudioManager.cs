@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class AudioManager : MonoBehaviour
 {
- 
+
     private AudioSource _audioSourcePlayer;
     private AudioSource _audioSource;
     [SerializeField] private float _volume = .7f;
@@ -72,7 +72,7 @@ public class AudioManager : MonoBehaviour
         _bgMusic.Play();
     }
 
-    IEnumerator FadeOut (AudioSource audioSource, float fadeTime)
+    IEnumerator FadeOut(AudioSource audioSource, float fadeTime)
     {
         float startVolume = audioSource.volume;
         while (audioSource.volume > 0)

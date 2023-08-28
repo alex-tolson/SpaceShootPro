@@ -19,9 +19,11 @@ public class Player : MonoBehaviour
     Vector3 _offset;
     private Vector3 _offsetTripleShot;
     private Vector3 _offsetBeams;
-    [SerializeField] private int _lives = 3;
-    [SerializeField] private float _fireRate = .15f;
+    private int _lives = 3;
+    private float _fireRate = .15f;
     private float _canFire = -1f;
+    [SerializeField] private float _fireRocketRate = 1f;
+    [SerializeField] private float _canFireRockets = -1f;
     //-----
     private SpawnManager _spawnManager;
     //-----Activating Powerups
@@ -32,7 +34,6 @@ public class Player : MonoBehaviour
     private bool _collectedBeamsPowerup;
     private bool _beamsActivated;
     private bool _isAmmoJamActive = false;
-    
 
     //-----
     [SerializeField] private int _score;
@@ -53,8 +54,9 @@ public class Player : MonoBehaviour
     //Player Presses C to Collect Powerups
     private bool _collectPowerups;
     //Homing Missile
-    private bool _isHomingActive;
+    [SerializeField] private bool _isHomingActive;
     [SerializeField] private GameObject _homingPrefab;
+    [SerializeField] private float _time;
 
 
     void Start()
@@ -80,7 +82,7 @@ public class Player : MonoBehaviour
         }
 
         _thrustersSlider = _uiManager.transform.Find("ThrustersSlider").GetComponent<ThrustersSlider>();
-            
+
         if (_thrustersSlider == null)
         {
             Debug.LogError("Player::ThrustersSlider is null");
@@ -91,11 +93,16 @@ public class Player : MonoBehaviour
 
     void Update()
     {
+        _time = Time.time;
         CalculateMovement();
 
         if (Input.GetKeyDown(KeyCode.Space) && _isHomingActive == true) //Homing Missile
         {
-            FireHoming();
+            if (Time.time > _canFireRockets)
+            {
+                _canFireRockets = Time.time + _fireRocketRate;
+                FireHoming();
+            }
         }
 
         else if (Input.GetKeyDown(KeyCode.Space) && (_collectedBeamsPowerup)) //Rare Beams Powerup
@@ -107,17 +114,16 @@ public class Player : MonoBehaviour
             else if (!_beamsActivated)
             {
                 _beamsActivated = true;
-                beamsGO = Instantiate(_beamsPrefab, transform.position, Quaternion.identity);
+                beamsGO = Instantiate(_beamsPrefab, transform.position + _offsetBeams, Quaternion.identity);
                 beamsGO.transform.parent = this.transform;
             }
         }
         else if (Input.GetKeyDown(KeyCode.Space) && (_isAmmoJamActive == true))
         {
             _audioManager.PlayEmptyChamberFx();
-            Debug.Log("Ammo Jam");
         }
 
-        else if (Input.GetKeyDown(KeyCode.Space) && Time.time > _canFire) //Fire Laser
+        else if (Input.GetKeyDown(KeyCode.Space) && _isHomingActive == false && Time.time > _canFire) //Fire Laser
         {
             if (_ammoCount <= 0)
             {
@@ -151,7 +157,7 @@ public class Player : MonoBehaviour
             _thrustersSlider.BurnThrusters(.055f + Time.deltaTime);
             _thrustersSlider.UpdateThrustersUI();
 
-            _currentSpeed = _speed * 1.5f;
+            _currentSpeed = _speed * 1.8f;
 
             if (_thrustersSlider.AreThrustersDepleted() == true)
             {
@@ -171,7 +177,7 @@ public class Player : MonoBehaviour
 
         if (_isTripleShotActive)
         {
-           GameObject laserGo = Instantiate(_tripleShotPrefab, transform.position + _offsetTripleShot, Quaternion.identity);
+            GameObject laserGo = Instantiate(_tripleShotPrefab, transform.position + _offsetTripleShot, Quaternion.identity);
             laserGo.transform.parent = GameObject.Find("PlayerLaserContainer").transform;
         }
         else
@@ -301,7 +307,7 @@ public class Player : MonoBehaviour
 
             _spawnManager.OnPlayerDeath();
 
-            Destroy(this.gameObject);
+            Destroy(gameObject);
         }
     }
 
@@ -417,12 +423,10 @@ public class Player : MonoBehaviour
                 if (_leftEngine.activeInHierarchy == true)
                 {
                     _leftEngine.SetActive(false);
-                    Debug.Log("turn off left engine");
                 }
                 else
                 {
                     _rightEngine.SetActive(false);
-                    Debug.Log("turn off right engine");
                 }
             }
         }
@@ -433,12 +437,10 @@ public class Player : MonoBehaviour
             if (y == 0)
             {
                 _leftEngine.SetActive(false);
-                Debug.Log("turn off left engine");
             }
             else if (y == 1)
             {
                 _rightEngine.SetActive(false);
-                Debug.Log("turn off right engine");
             }
         }
 
@@ -457,7 +459,7 @@ public class Player : MonoBehaviour
         _collectedBeamsPowerup = true;
         StartCoroutine(BeamsPowerDownRoutine());
     }
-        
+
     IEnumerator BeamsPowerDownRoutine()
     {
         yield return new WaitForSeconds(5.0f);
@@ -474,7 +476,7 @@ public class Player : MonoBehaviour
 
     IEnumerator HomingPowerDownRoutine()
     {
-        yield return new WaitForSeconds(8.0f);
+        yield return new WaitForSeconds(5.0f);
         _isHomingActive = false;
     }
 
@@ -509,9 +511,10 @@ public class Player : MonoBehaviour
 
     private void FireHoming()
     {
+
         if (_isHomingActive == true)
         {
-            GameObject go = Instantiate(_homingPrefab, this.transform.position + _offset, Quaternion.identity);
+            GameObject go = Instantiate(_homingPrefab, transform.position + _offsetTripleShot, Quaternion.identity);
         }
     }
 
@@ -527,5 +530,6 @@ public class Player : MonoBehaviour
     //results will be sorted by distance from player
     //loop through results/enemies detected within the circle raycast
     //homing missile is sent out to nearest target of result with the least amount of distance
+
 }
 

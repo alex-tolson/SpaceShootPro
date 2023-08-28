@@ -1,5 +1,4 @@
 using System.Collections;
-using TMPro;
 using UnityEngine;
 
 public class AsteroidsSpawn : MonoBehaviour
@@ -18,7 +17,7 @@ public class AsteroidsSpawn : MonoBehaviour
     void Start()
     {
         _camShake = GameObject.Find("Main Camera").GetComponent<CameraShake>();
-        if(_camShake == null)
+        if (_camShake == null)
         {
             Debug.LogError("AsteroidSpawn::CameraShake is null");
         }
@@ -33,11 +32,6 @@ public class AsteroidsSpawn : MonoBehaviour
             Debug.LogError("AsteroidSpawn::SpawnManager is null");
         }
         _shakeTime = 9f;
- 
-    }
-
-    private void Update()
-    {
 
     }
 

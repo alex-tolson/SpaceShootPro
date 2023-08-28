@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: -6425595773095302403}
   m_Layer: 0
   m_Name: Enemy_HomingPrefab
-  m_TagString: Homing
+  m_TagString: EnemyHoming
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

@@ -10,16 +10,10 @@ public class Asteroid : MonoBehaviour
     private AudioManager _audioManager;
     private UIManager _uiManager;
     private Player _player;
-    private AsteroidsSpawn _asteroidsSpawnScript;
-    private Vector3 _rot;
+    private CameraShake _cameraShake;
 
     void Start()
     {
-        _asteroidsSpawnScript = GameObject.Find("Big_Boss").GetComponent<AsteroidsSpawn>();
-        if(_asteroidsSpawnScript == null)
-        {
-            Debug.LogError("Asteroid::AsteroidsSpawn Script is null");
-        }
         _spawnManager = GameObject.Find("SpawnManager").GetComponent<SpawnManager>();
         if (_spawnManager == null)
         {
@@ -38,35 +32,53 @@ public class Asteroid : MonoBehaviour
         }
         //
         _player = GameObject.Find("Player").GetComponent<Player>();
-        if(_player == null)
+        if (_player == null)
         {
             Debug.LogError("Asteroid::Player is null");
         }
-        _rot = new Vector3(0f, 0f, 90f);
+        _cameraShake = GameObject.Find("Main Camera").GetComponent<CameraShake>();
+        if (_cameraShake == null)
+        {
+            Debug.LogError("Asteroid::CameraShake is null");
+        }
+
     }
 
     void Update()
     {
         AsteroidFall();
-        //transform.Rotate(_rot * 3f * Time.deltaTime);
+
     }
 
     public void OnTriggerEnter2D(Collider2D other)
     {
-       
+
         if (other.CompareTag("Laser"))
         {
+            Destroy(gameObject);
             GameObject go = Instantiate(_explosionPrefab, transform.position, Quaternion.identity);
             _audioManager.PlayExplosionFx();
             Destroy(go, 3f);
-            //Destroy(_asteroid, .3f);
+        }
+        if (other.CompareTag("Player"))
+        {
+            _player.Damage();
+            _cameraShake.StartCamShake();
             Destroy(gameObject);
+            GameObject go = Instantiate(_explosionPrefab, transform.position, Quaternion.identity);
+            _audioManager.PlayExplosionFx();
+            Destroy(go, 3f);
+
         }
     }
 
     public void AsteroidFall()
     {
-        transform.Translate(Vector3.down * 4 * Time.deltaTime);
-        //transform.Rotate(_rot * 3f * Time.deltaTime);
+        transform.Translate(Vector3.down * _speed * Time.deltaTime);
+        if (transform.position.y <= -9f)
+        {
+            Destroy(gameObject);
+        }
+
     }
 }

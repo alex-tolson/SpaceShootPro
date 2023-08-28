@@ -1,6 +1,5 @@
 using System.Collections;
 using UnityEngine;
-using static UnityEngine.GraphicsBuffer;
 
 public class Enemy : MonoBehaviour
 {
@@ -10,9 +9,12 @@ public class Enemy : MonoBehaviour
     private AudioManager _audioManager;
 
     private SpawnManager _spawnManager;
-    /*[SerializeField]*/private Vector3 _offset;
-    /*[SerializeField]*/private Vector3 _heatSeekOffset;
-    /*[SerializeField]*/private Vector3 _smartEnemyLaserOffset;
+    /*[SerializeField]*/
+    private Vector3 _offset;
+    /*[SerializeField]*/
+    private Vector3 _heatSeekOffset;
+    /*[SerializeField]*/
+    private Vector3 _smartEnemyLaserOffset;
     [SerializeField] private float _fireRate;
     [SerializeField] private GameObject _laserPrefab;
     [SerializeField] private GameObject _heatSeekLaserPrefab;
@@ -46,12 +48,15 @@ public class Enemy : MonoBehaviour
     //Smart Enemy - Backwards Fire-CoolDown--//
     private Vector3 localPosition;
 
-    /*[SerializeField]*/ private bool _isBehindPlayer;
+    /*[SerializeField]*/
+    private bool _isBehindPlayer;
 
     //Enemy Attack Collectables ----//
     /*[SerializeField]*/private Vector3 _locPosCollectable;
-    /*[SerializeField]*/ private GameObject _powerup;
-    /*[SerializeField]*/ private bool _canAttackPowerup;
+    /*[SerializeField]*/
+    private GameObject _powerup;
+    /*[SerializeField]*/
+    private bool _canAttackPowerup;
     RaycastHit2D _hitPowerup;
 
     //Enemy Avoid Shot
@@ -107,10 +112,10 @@ public class Enemy : MonoBehaviour
 
         //-------------Enemies by Waves---------------/////
         EnemyBalancedSpawning();
-        //StartCoroutine(FireLaserRoutine());
+        StartCoroutine(FireLaserRoutine());
 
         //Enemy Attack collectables------//
-        //StartCoroutine(DestroyCollectableCo());
+        StartCoroutine(DestroyCollectableCo());
     }
 
     void Update()
@@ -137,14 +142,14 @@ public class Enemy : MonoBehaviour
             _ramPlayer = false;
         }
 
-        //FindPowerup();
-        //AttackPowerup();
+        FindPowerup();
+        AttackPowerup();
         EnemyMov(_enemyType);
     }
 
     void EnemyMov(int enemyId)
     {
-        //RamPlayer();
+        RamPlayer();
 
         switch (enemyId)
         {
@@ -302,7 +307,7 @@ public class Enemy : MonoBehaviour
     {
         while (true)
         {
-            _fireRate = 2/*Random.Range(2, 5)*/;
+            _fireRate = Random.Range(3, 6);
 
             if (_isBehindPlayer)
             {
@@ -332,17 +337,17 @@ public class Enemy : MonoBehaviour
 
     private void EnemyBalancedSpawning()
     {
-        if (_spawnManager.whatWaveCountIsIt() <= 2)
+        if (_spawnManager.WhatWaveCountIsIt() <= 2)
         {
             _enemyType = Random.Range(0, 3);
 
         }
-        else if (_spawnManager.whatWaveCountIsIt() >= 3 && _spawnManager.whatWaveCountIsIt() <= 5)
+        else if (_spawnManager.WhatWaveCountIsIt() >= 3 && _spawnManager.WhatWaveCountIsIt() <= 5)
         {
             _enemyType = Random.Range(1, 4);
 
         }
-        else if (_spawnManager.whatWaveCountIsIt() <= 7)
+        else if (_spawnManager.WhatWaveCountIsIt() <= 7)
         {
             _enemyType = Random.Range(3, 6);
         }

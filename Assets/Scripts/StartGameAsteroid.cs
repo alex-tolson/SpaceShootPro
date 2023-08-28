@@ -59,7 +59,6 @@ public class StartGameAsteroid : MonoBehaviour
             Destroy(go, 3f);
             _spawnManager.BeginWave(1, 10f);
             Destroy(GetComponent<Collider2D>());
-            //Destroy(_asteroid, .3f);
             gameObject.SetActive(false);
         }
     }

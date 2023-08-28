@@ -18,7 +18,7 @@ public class Powerup : MonoBehaviour
         }
 
         _audioManager = GameObject.Find("AudioManager").GetComponent<AudioManager>();
-        if(_audioManager == null)
+        if (_audioManager == null)
         {
             Debug.LogError("Powerup::AudioManager is null");
         }
@@ -29,7 +29,7 @@ public class Powerup : MonoBehaviour
     {
         if (player.IsCPressed() && gameObject.CompareTag("Powerup"))
         {
-            transform.position = Vector3.MoveTowards(transform.position, player.transform.position, (1+_speed) * Time.deltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, player.transform.position, (1 + _speed) * Time.deltaTime);
         }
         else
         {
@@ -87,22 +87,23 @@ public class Powerup : MonoBehaviour
                 case 6:
                     {
                         player.BeamsPowerup();
+                        _audioManager.PlayPowerupFx();
                         break;
                     }
                 case 7:
                     {
                         player.HomingPowerup();
+                        _audioManager.PlayPowerupFx();
                         break;
                     }
 
                 default:
                     {
-                        Debug.Log("Default");
                         break;
                     }
             }
 
-            
+
             Destroy(this.gameObject);
         }
         else if (other.CompareTag("Laser"))
@@ -111,7 +112,7 @@ public class Powerup : MonoBehaviour
             _audioManager.PlayExplosionFx();
             Destroy(gameObject);
             Destroy(go, 2.8f);
-            
+
         }
     }
 

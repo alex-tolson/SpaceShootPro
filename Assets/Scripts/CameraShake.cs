@@ -6,13 +6,8 @@ public class CameraShake : MonoBehaviour
 
     private float randomXaxis;
     private float randomYaxis;
-    [SerializeField] private GameObject _bigBoss;
 
-    private void Start()
-    {
 
-    }
-    // Update is called once per frame
     void Update()
     {
 

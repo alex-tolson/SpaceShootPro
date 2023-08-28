@@ -8,6 +8,8 @@ TagManager:
   - Laser
   - Powerup
   - Homing
+  - EnemyHoming
+  - Turret
   layers:
   - Default
   - TransparentFX

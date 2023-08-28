@@ -8,7 +8,7 @@ public class SpawnManager : MonoBehaviour
     [SerializeField] private GameObject _enemyContainer;
     [SerializeField] private GameObject _bigBoss;
     private static List<GameObject> _enemies = new List<GameObject>();
-   
+
     [SerializeField] private GameObject[] powerups;
     private UIManager _uiManager;
     private Player _player;
@@ -76,7 +76,7 @@ public class SpawnManager : MonoBehaviour
             float randomX = Random.Range(-10f, 10f);
             location = new Vector3(randomX, 10.0f, 0f);
 
-            if (_percentiles <= 55)  
+            if (_percentiles <= 55)
             {
                 _randomPowerup = Random.Range(0, 6);
                 if ((_randomPowerup == 0) || (_randomPowerup == 2) || (_randomPowerup == 4))
@@ -86,7 +86,7 @@ public class SpawnManager : MonoBehaviour
 
                 Instantiate(powerups[_randomPowerup], location, Quaternion.identity);
             }//low tier is 1, 3, and 5
-            else if ((_percentiles > 56) && (_percentiles < 86)) 
+            else if ((_percentiles > 56) && (_percentiles < 85))
             {
                 _randomPowerup = Random.Range(0, 2);
 
@@ -97,7 +97,7 @@ public class SpawnManager : MonoBehaviour
 
                 Instantiate(powerups[_randomPowerup], location, Quaternion.identity);
             }// middle tier is 0 and 2
-            else if ((_percentiles < 85)) // High tier is 4, 6, and 7
+            else if ((_percentiles > 86)) // High tier is 4, 6, and 7
             {
                 if (_player.HasTakenDamage())
                 {
@@ -158,7 +158,7 @@ public class SpawnManager : MonoBehaviour
             if (enemy != null && enemy.CompareTag("Enemy"))
             {
                 Destroy(enemy);
-            }          
+            }
         }
         _timer = 0;
         _enemies.Clear();
@@ -166,24 +166,22 @@ public class SpawnManager : MonoBehaviour
         BeginWave(1, 10);
     }
 
-    public int whatWaveCountIsIt()
+    public int WhatWaveCountIsIt()
     {
         return _waveCount;
     }
 
     private void BeginFinalWave()
     {
-        _bigBoss.SetActive(true);
-        StartCoroutine(InvincibleFrames());
+        Instantiate(_bigBoss, new Vector3(0, 0, 0), Quaternion.identity);
+
+        if (_bigBoss == null)
+        {
+            Debug.LogError("SpawnManager::BigBoss is null");
+        }
         StartCoroutine("SpawnPowerupRoutine");
     }
-    IEnumerator InvincibleFrames()
-    {
-        _bigBoss.GetComponent<Collider2D>().gameObject.SetActive(false);
-        yield return new WaitForSeconds(4.5f);
-        _bigBoss.GetComponent<Collider2D>().gameObject.SetActive(true);
-        //Introduce boss. turn off collider2d
-        //till animation finishes playing
-    }
+
+
 }
 

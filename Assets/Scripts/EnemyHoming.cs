@@ -3,7 +3,7 @@ using UnityEngine;
 public class EnemyHoming : MonoBehaviour
 {
     private Player _player;
-    [SerializeField] private float _homingSpeed = 2;
+    [SerializeField] private float _homingSpeed = 2.0f;
     private Vector3 _direction;
     [SerializeField] private GameObject _explosionPrefab;
     private AudioManager _audio;
@@ -26,8 +26,6 @@ public class EnemyHoming : MonoBehaviour
         {
             Debug.LogError("EnemyHoming::CameraShake is null");
         }
-
-        //DestroyRocket();
     }
 
     private void Update()
@@ -36,6 +34,10 @@ public class EnemyHoming : MonoBehaviour
         {
             LookAtTarget();
             transform.position = Vector3.MoveTowards(transform.position, _player.transform.position, _homingSpeed * Time.deltaTime);
+        }
+        if (Vector3.Distance(transform.position, _player.transform.position) > 9.0f)
+        {
+            ExpireHomingRocket();
         }
     }
 
@@ -48,7 +50,6 @@ public class EnemyHoming : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        //Debug.Log(other);
         if (other.CompareTag("Laser"))
         {
             Destroy(gameObject);
@@ -57,16 +58,21 @@ public class EnemyHoming : MonoBehaviour
         }
         if (other.CompareTag("Player"))
         {
-            //_player.Damage();
+            _player.Damage();
             _camShake.StartCamShake();
             Destroy(gameObject);
         }
+        if (other.transform.parent != null && other.transform.parent.name == "HomingPrefab(Clone)")
+        {
+            Destroy(other.gameObject);
+            Destroy(gameObject);
+            Instantiate(_explosionPrefab, transform.position, Quaternion.identity);
+            _audio.PlayExplosionFx();
+        }
+    }
+    private void ExpireHomingRocket()
+    {
+        Destroy(gameObject);
     }
 
-    private void DestroyRocket()
-    {
-        Destroy(gameObject, 7.0f);
-        Instantiate(_explosionPrefab, transform.position, Quaternion.identity);
-        _audio.PlayExplosionFx();
-    }
 }

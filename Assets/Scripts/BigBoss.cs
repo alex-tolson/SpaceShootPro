@@ -1,4 +1,6 @@
+using System.Collections;
 using UnityEngine;
+using UnityEngine.PlayerLoop;
 
 public class BigBoss : MonoBehaviour
 {
@@ -7,10 +9,13 @@ public class BigBoss : MonoBehaviour
     private Animator _anim;
     private AudioSource _backgroundAudioSource;
     private AudioSource _bossbattleAudioSource;
-    // Start is called before the first frame update
+    [SerializeField] private int _bigBossHp = 105;
+    [SerializeField] private GameObject _explosionPrefab;
+    [SerializeField] private GameObject _smallExplosionPrefab;
+    [SerializeField] private GameObject _turret1, _turret2, _turret3;
     void Start()
     {
-        _backgroundAudioSource = GameObject.Find("BGMusic").GetComponent<AudioSource>(); 
+        _backgroundAudioSource = GameObject.Find("BGMusic").GetComponent<AudioSource>();
         if (_backgroundAudioSource == null)
         {
             Debug.LogError("BigBoss::BGMusic is null");
@@ -27,7 +32,7 @@ public class BigBoss : MonoBehaviour
         {
             Debug.LogError("BigBoss::AudioManager is null");
         }
-        _asteroidsSpawn = GetComponent<AsteroidsSpawn>();  
+        _asteroidsSpawn = GetComponent<AsteroidsSpawn>();
         if (_asteroidsSpawn == null)
         {
             Debug.LogError("BigBoss::AsteroidSpawn is null");
@@ -38,21 +43,94 @@ public class BigBoss : MonoBehaviour
             Debug.LogError("BigBoss::Animator is null");
         }
 
-        _audioManager.StartFadeOut(_backgroundAudioSource, 4f);
+        _audioManager.StartFadeOut(_backgroundAudioSource, 3f);
         _audioManager.StartFadeIn(_bossbattleAudioSource, 2f);
+        StartCoroutine(BossOrderLayerCo());
     }
 
-    // Update is called once per frame
-    void Update()
+    IEnumerator BossOrderLayerCo()
     {
-        //if (Input.GetKeyDown(KeyCode.T))
-        //{
+        SpriteRenderer sr = GetComponent<SpriteRenderer>();
 
-        //    //_anim.SetBool("Attacking", true);
-        //    //_asteroidsSpawn.UseAsteroidAttack();
-        //}
+        yield return new WaitForSeconds(4.5f);
+
+        if (sr != null)
+        {
+            sr.sortingOrder = 1;
+        }
     }
 
+    IEnumerator TurretDownedCo()
+    {
+        yield return new WaitForSeconds(.5f);
+        _anim.SetBool("Attacking", true);
+        _asteroidsSpawn.UseAsteroidAttack();
+        yield return new WaitForSeconds(1.5f);
+        _anim.SetBool("Attacking", false);
+    }
 
+    public void StartTurretDowned()
+    {
+        StartCoroutine(TurretDownedCo());
+    }
 
+    public void BossTakeDamage()
+    {
+        _bigBossHp -= 10;
+
+        if (_bigBossHp <= 0 && AllTurretsDestroyed())
+        {
+            StartCoroutine(ExplodeBigBossCo());
+        }
+    }
+
+    IEnumerator ExplodeBigBossCo()
+    {
+        float randX;
+        float randY;
+        Vector3 pos;
+        for (int i = 0; i < 20; i++)
+        {
+            randX = Random.Range(-4.7f, 4.7f);
+            randY = Random.Range(.77f, -1.18f);
+            pos = new Vector3(randX, randY, transform.position.z);
+            gameObject.SetActive(false);
+            GameObject go = Instantiate(_explosionPrefab, pos, Quaternion.identity);
+            _audioManager.PlayExplosionFx();
+            Destroy(go, 3f);
+            yield return new WaitForSeconds(.1f);
+        }
+
+        yield return new WaitForSeconds(1f);
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Laser") || other.CompareTag("Homing"))
+        {
+            BossTakeDamage();
+            GameObject go = Instantiate(_smallExplosionPrefab, other.transform.position, Quaternion.identity);
+            _audioManager.PlayExplosionFx();
+            Destroy(go, 3f);
+        }
+    }
+
+    private bool AllTurretsDestroyed()
+    {
+        if (_turret1 != null || _turret2 != null || _turret3 != null)
+        {
+            if (_turret1.activeInHierarchy || _turret2.activeInHierarchy || _turret3.activeInHierarchy)
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+        else
+        {
+            return true;
+        }
+    }
 }

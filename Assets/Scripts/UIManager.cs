@@ -25,7 +25,6 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TMP_Text _waveTimeText;
     [SerializeField] private TMP_Text _finalWaveText;
 
-    // Start is called before the first frame update
     void Start()
     {
         _scoreText.text = "Score: 0";
@@ -106,7 +105,7 @@ public class UIManager : MonoBehaviour
     }
 
     IEnumerator DisplayFinalWaveInfoCorou()
-    {       
+    {
         _finalWaveText.gameObject.SetActive(true);
         yield return new WaitForSeconds(3.0f);
         _finalWaveText.gameObject.SetActive(false);

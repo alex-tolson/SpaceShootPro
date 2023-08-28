@@ -5,11 +5,12 @@ public class Homing : MonoBehaviour
     [SerializeField] private GameObject _closestTarget = null;
     private float _shortestDistance = 50.0f;
     private float _distance;
-    [SerializeField] private float _homingSpeed = 2;
+    [SerializeField] private float _homingSpeed = 2.0f;
     RaycastHit2D[] collisions;
     private Vector3 _direction;
     [SerializeField] private GameObject _explosionPrefab;
     private AudioManager _audio;
+
 
     private void Start()
     {
@@ -18,36 +19,60 @@ public class Homing : MonoBehaviour
         {
             Debug.LogError("Homing::AudioManager is null");
         }
-        DestroyRocket();
     }
 
     private void Update()
     {
         FindTarget();
-        
-        if (_closestTarget != null)
+
+        if (_closestTarget != null && _closestTarget.activeInHierarchy)
         {
             LookAtTarget();
             transform.position = Vector3.MoveTowards(transform.position, _closestTarget.transform.position, _homingSpeed * Time.deltaTime);
         }
-
+        else
+        {
+            ExpireHomingRocket();
+        }
     }
 
     public void FindTarget()
     {
-         collisions = Physics2D.CircleCastAll( transform.position, 50.0f, Vector3.forward);
+        collisions = Physics2D.CircleCastAll(transform.position, 50.0f, Vector3.forward);
 
         foreach (var obj in collisions)
         {
-            if (obj.collider.CompareTag("Enemy"))
+            if (obj.transform.gameObject != null)
             {
-                _distance = Vector3.Distance(obj.transform.position, transform.position);
-                if (_distance < _shortestDistance)
+                if (obj.collider.CompareTag("Enemy"))
                 {
-                    _shortestDistance = _distance;
-                    _closestTarget = obj.collider.gameObject;
+                    _distance = Vector3.Distance(obj.transform.position, transform.position);
+                    if (_distance < _shortestDistance)
+                    {
+                        _shortestDistance = _distance;
+                        _closestTarget = obj.collider.gameObject;
+                    }
                 }
-            }
+
+                else if (obj.collider.CompareTag("EnemyHoming"))
+                {
+                    _distance = Vector3.Distance(obj.transform.position, transform.position);
+                    if (_distance < _shortestDistance)
+                    {
+                        _shortestDistance = _distance;
+                        _closestTarget = obj.collider.gameObject;
+                    }
+                }
+                else if (obj.collider.CompareTag("Turret"))
+                {
+                    _distance = Vector3.Distance(obj.transform.position, transform.position);
+                    if (_distance < _shortestDistance)
+                    {
+                        _shortestDistance = _distance;
+                        _closestTarget = obj.collider.gameObject;
+                    }
+                }
+            } 
         }
     }
 
@@ -64,19 +89,18 @@ public class Homing : MonoBehaviour
         {
             Destroy(gameObject);
         }
-
-        if (other.transform.parent.name == "PlayerLaserContainer")
+        else if (other.CompareTag("Turret"))
         {
             Destroy(gameObject);
-            Instantiate(_explosionPrefab, transform.position, Quaternion.identity);
-            _audio.PlayExplosionFx();
+        }
+        else if (other.CompareTag("EnemyHoming"))
+        {
+            Destroy(gameObject);
         }
     }
 
-    private void DestroyRocket()
+    private void ExpireHomingRocket()
     {
-        Destroy(gameObject, 7.0f);
-        Instantiate(_explosionPrefab, transform.position, Quaternion.identity);
-        _audio.PlayExplosionFx();
+        Destroy(gameObject);
     }
 }
