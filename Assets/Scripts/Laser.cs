@@ -22,7 +22,10 @@ public class Laser : MonoBehaviour
     }
     void Update()
     {
-        if (_player != null) { _dist = Vector3.Distance(gameObject.transform.position, _player.transform.position); }
+        if (_player != null) 
+        { 
+            _dist = Vector3.Distance(gameObject.transform.position, _player.transform.position); 
+        }
 
         switch (transform.parent.name)
         {
@@ -78,6 +81,7 @@ public class Laser : MonoBehaviour
 
                     break;
                 }
+
             case "BigBossLaserContainer":
                 {
                     if (gameObject.name == "HeatSeekLaser(Clone)")
@@ -114,10 +118,7 @@ public class Laser : MonoBehaviour
             _player.Damage();
             _camShake.StartCamShake();
 
-            if (gameObject.name == "HeatSeekLaser(Clone)")
-            {
-                Destroy(gameObject);
-            }
+            Destroy(gameObject);
         }
     }
 }

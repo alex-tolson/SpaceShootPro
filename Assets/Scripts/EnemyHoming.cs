@@ -22,7 +22,7 @@ public class EnemyHoming : MonoBehaviour
             Debug.LogError("EnemyHoming::AudioManager is null");
         }
         _camShake = GameObject.Find("Main Camera").GetComponent<CameraShake>();
-        if (_camShake == null)//-----------NullChecking Camera Shake------------
+        if (_camShake == null)
         {
             Debug.LogError("EnemyHoming::CameraShake is null");
         }
@@ -52,9 +52,9 @@ public class EnemyHoming : MonoBehaviour
     {
         if (other.CompareTag("Laser"))
         {
-            Destroy(gameObject);
             Instantiate(_explosionPrefab, transform.position, Quaternion.identity);
             _audio.PlayExplosionFx();
+            Destroy(gameObject);
         }
         if (other.CompareTag("Player"))
         {
@@ -65,11 +65,12 @@ public class EnemyHoming : MonoBehaviour
         if (other.transform.parent != null && other.transform.parent.name == "HomingPrefab(Clone)")
         {
             Destroy(other.gameObject);
-            Destroy(gameObject);
             Instantiate(_explosionPrefab, transform.position, Quaternion.identity);
             _audio.PlayExplosionFx();
+            Destroy(gameObject);
         }
     }
+
     private void ExpireHomingRocket()
     {
         Destroy(gameObject);

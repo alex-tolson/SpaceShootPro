@@ -23,14 +23,12 @@ public class Asteroid : MonoBehaviour
         if (_audioManager == null)
         {
             Debug.LogError("Asteroid::AudioSource is null");
-        }
-        //
+        }  
         _uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();
         if (_uiManager == null)
         {
             Debug.LogError("Asteroid::UIManager is null");
         }
-        //
         _player = GameObject.Find("Player").GetComponent<Player>();
         if (_player == null)
         {
@@ -41,7 +39,6 @@ public class Asteroid : MonoBehaviour
         {
             Debug.LogError("Asteroid::CameraShake is null");
         }
-
     }
 
     void Update()
@@ -50,24 +47,25 @@ public class Asteroid : MonoBehaviour
 
     }
 
-    public void OnTriggerEnter2D(Collider2D other)
+    private void OnTriggerEnter2D(Collider2D other)
     {
 
         if (other.CompareTag("Laser"))
         {
-            Destroy(gameObject);
             GameObject go = Instantiate(_explosionPrefab, transform.position, Quaternion.identity);
             _audioManager.PlayExplosionFx();
             Destroy(go, 3f);
+            Destroy(gameObject);
         }
+
         if (other.CompareTag("Player"))
         {
             _player.Damage();
             _cameraShake.StartCamShake();
-            Destroy(gameObject);
             GameObject go = Instantiate(_explosionPrefab, transform.position, Quaternion.identity);
             _audioManager.PlayExplosionFx();
             Destroy(go, 3f);
+            Destroy(gameObject);
 
         }
     }

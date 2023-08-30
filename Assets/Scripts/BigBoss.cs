@@ -1,6 +1,6 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.PlayerLoop;
+using UnityEngine.SceneManagement;
 
 public class BigBoss : MonoBehaviour
 {
@@ -13,6 +13,7 @@ public class BigBoss : MonoBehaviour
     [SerializeField] private GameObject _explosionPrefab;
     [SerializeField] private GameObject _smallExplosionPrefab;
     [SerializeField] private GameObject _turret1, _turret2, _turret3;
+
     void Start()
     {
         _backgroundAudioSource = GameObject.Find("BGMusic").GetComponent<AudioSource>();
@@ -20,13 +21,11 @@ public class BigBoss : MonoBehaviour
         {
             Debug.LogError("BigBoss::BGMusic is null");
         }
-
         _bossbattleAudioSource = GameObject.Find("BossBattle").GetComponent<AudioSource>();
         if (_bossbattleAudioSource == null)
         {
             Debug.LogError("BigBoss::Boss Battle music is null");
         }
-
         _audioManager = GameObject.Find("AudioManager").GetComponent<AudioManager>();
         if (_audioManager == null)
         {
@@ -42,9 +41,9 @@ public class BigBoss : MonoBehaviour
         {
             Debug.LogError("BigBoss::Animator is null");
         }
-
         _audioManager.StartFadeOut(_backgroundAudioSource, 3f);
         _audioManager.StartFadeIn(_bossbattleAudioSource, 2f);
+
         StartCoroutine(BossOrderLayerCo());
     }
 
@@ -89,19 +88,20 @@ public class BigBoss : MonoBehaviour
         float randX;
         float randY;
         Vector3 pos;
-        for (int i = 0; i < 20; i++)
+        for (int i = 0; i < 15; i++)
         {
             randX = Random.Range(-4.7f, 4.7f);
             randY = Random.Range(.77f, -1.18f);
             pos = new Vector3(randX, randY, transform.position.z);
-            gameObject.SetActive(false);
+
             GameObject go = Instantiate(_explosionPrefab, pos, Quaternion.identity);
             _audioManager.PlayExplosionFx();
             Destroy(go, 3f);
-            yield return new WaitForSeconds(.1f);
+            yield return new WaitForSeconds(.25f);
         }
 
-        yield return new WaitForSeconds(1f);
+        SceneManager.LoadScene(0);
+        Destroy(gameObject);
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -134,3 +134,4 @@ public class BigBoss : MonoBehaviour
         }
     }
 }
+

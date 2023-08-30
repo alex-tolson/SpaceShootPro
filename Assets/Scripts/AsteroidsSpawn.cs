@@ -10,10 +10,8 @@ public class AsteroidsSpawn : MonoBehaviour
     [SerializeField] private float _shakeTime;
     [SerializeField] private Vector3 _newPosition;
     [SerializeField] private float _newSize;
-    private bool _asteroidAttack;
 
 
-    // Start is called before the first frame update
     void Start()
     {
         _camShake = GameObject.Find("Main Camera").GetComponent<CameraShake>();
@@ -32,25 +30,13 @@ public class AsteroidsSpawn : MonoBehaviour
             Debug.LogError("AsteroidSpawn::SpawnManager is null");
         }
         _shakeTime = 9f;
-
     }
 
-    public bool IsAsteroidSpawnActive()
-    {
-        return _asteroidAttack;
-    }
-    //Instantiate many prefabs of the asteroid
-    //every 1-2 seconds, instantiate a new asteroid
-    //random on the x, 7 on the y
-
-    //instantiate different sizes
-    //satellites fall downward and damage player/shield upon contact
-    //lasers destroy asteroids
-    //some have smoke
     IEnumerator ShakeSpaceCoroutine()
     {
         yield return new WaitForSeconds(.24f);
         _anim.SetBool("Attacking", false);
+
         for (int i = 0; i < _shakeTime; i++)
         {
             _newSize = Random.Range(.5f, 1.5f);
@@ -59,12 +45,10 @@ public class AsteroidsSpawn : MonoBehaviour
             go.transform.localScale = new Vector3(_newSize, _newSize, _newSize);
             yield return new WaitForSeconds(1f);
         }
-        _asteroidAttack = false;
     }
 
     public void UseAsteroidAttack()
     {
-        _asteroidAttack = true;
         StartCoroutine(ShakeSpaceCoroutine());
         _camShake.StartAsteroidFall();
     }

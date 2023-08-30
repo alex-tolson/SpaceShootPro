@@ -11,7 +11,6 @@ public class Turret : MonoBehaviour
     GameObject go;
     [SerializeField] private GameObject _enemyHoming;
     [SerializeField] private int _rocketReloadTime;
-    /*    [SerializeField]*/
     public int _turretHp = 0;
     private SpriteRenderer _sr;
     private Color _color;
@@ -93,15 +92,6 @@ public class Turret : MonoBehaviour
             gameObject.SetActive(false);
             _bigBoss.StartTurretDowned();
         }
-
-        //turret takes 3 hits,
-        //when hit,
-        //attack with asteroid shake
-        //minus one hit
-        //when hits is zero, 
-        //destroy turret
-        //instantiate explosion
-        //play explosion fx
     }
 
     private void TakeRocketDamage()
@@ -133,24 +123,15 @@ public class Turret : MonoBehaviour
 
     IEnumerator HitTurretCo()
     {
-        yield return new WaitForSeconds(.3f);
-        _color = Color.red;
-        _sr.color = _color;
-        yield return new WaitForSeconds(.3f);
-        _color = Color.white;
-        _sr.color = _color;
-        yield return new WaitForSeconds(.3f);
-        _color = Color.red;
-        _sr.color = _color;
-        yield return new WaitForSeconds(.3f);
-        _color = Color.white;
-        _sr.color = _color;
-        yield return new WaitForSeconds(.3f);
-        _color = Color.red;
-        _sr.color = _color;
-        yield return new WaitForSeconds(.3f);
-        _color = Color.white;
-        _sr.color = _color;
+        for (int i = 0; i < 3; i++)
+        {
+            yield return new WaitForSeconds(.25f);
+            _color = Color.red;
+            _sr.color = _color;
+            yield return new WaitForSeconds(.25f);
+            _color = Color.white;
+            _sr.color = _color;
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -168,9 +149,5 @@ public class Turret : MonoBehaviour
             Destroy(other);
             TakeRocketDamage();
         }
-
-
     }
-
-
 }
